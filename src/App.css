@@ -23,6 +23,20 @@ body {
 }
 
 
+.table-container {
+  position: relative;
+  overflow: auto;
+  max-height: 80vh; /* or any other appropriate value */
+}
+
+.sticky-thead {
+  position: sticky;
+  top: 0;
+  background-color: #ffffff; /* Optional: Add background color for better visibility */
+  z-index: 1; /* Ensure the thead stays above other content */
+}
+
+
 
 
 @media only screen and (max-width:768px){

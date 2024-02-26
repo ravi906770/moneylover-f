@@ -16,21 +16,22 @@ type Props = {};
 
 
 interface Category {
-  _id:string,
+  _id: string,
   category: string;
   // other properties
 }
 
 
 interface Transaction {
-  name: String;
-  discription: String;
-  date: String;
-  category:String;
-  payment : String;
-  end_date : Date;
-  status : String;
-  mode : String
+  _id : string;
+  name: string;
+  discription: string;
+  date: string;
+  category: string;
+  payment: string;
+  end_date: string;
+  status: string;
+  mode: string
 }
 
 
@@ -41,43 +42,43 @@ const Transaction = (props: Props) => {
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [showForm, setShowForm] = useState<boolean>(false);
-  const [name , setName] = useState<string>('');
-  const [discription , setDiscription] = useState<string>('');
-  const [category , setCategory] = useState<string>('');
-  const [date , setDate] = useState<string>('');
-  const [end_date , setEnd_Date] = useState<string>('');
-  const [payment , setPaymet] = useState<string>('');
-  const [status , setStatus] =useState<string>('');
-  const [mode , setMode] = useState<string>('');
-  const [categories , setCategories] = useState<Category[]>([])
+  const [name, setName] = useState<string>('');
+  const [discription, setDiscription] = useState<string>('');
+  const [category, setCategory] = useState<string>('');
+  const [date, setDate] = useState<string>('');
+  const [end_date, setEnd_Date] = useState<string>('');
+  const [payment, setPaymet] = useState<string>('');
+  const [status, setStatus] = useState<string>('');
+  const [mode, setMode] = useState<string>('');
+  const [categories, setCategories] = useState<Category[]>([])
   // const [id, setId] = useState("");
-  const [transaction , setTransaction] = useState<Transaction[]>([]);
+  const [transaction, setTransaction] = useState<Transaction[]>([]);
 
 
 
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(()=>{
-      try {
-        axios.get("/api/v1/getCategory").then((response)=>{
-          console.log(response.data.getCategory);
-          setCategories(response.data.getCategory)
+  useEffect(() => {
+    try {
+      axios.get("/api/v1/getCategory").then((response) => {
+        console.log(response.data.getCategory);
+        setCategories(response.data.getCategory)
 
-          // console.log(categories[0].category);
-          
-        }
-        )
-      } catch (error) {
-        console.log(error)
+        // console.log(categories[0].category);
+
       }
-  },[])
+      )
+    } catch (error) {
+      console.log(error)
+    }
+  }, [])
 
-  const handleTransaction =async (e: React.FormEvent<HTMLFormElement>)=>{
+  const handleTransaction = async (e: React.FormEvent<HTMLFormElement>) => {
 
     e.preventDefault();
     try {
-      const res = await axios.post(`/api/v1/transaction`, { name , discription,date,category,payment,end_date,status,mode})
+      const res = await axios.post(`/api/v1/transaction`, { name, discription, date, category, payment, end_date, status, mode })
       if (res && res.data.success) {
         // console.log(res)
         setName('');
@@ -90,47 +91,53 @@ const Transaction = (props: Props) => {
         setMode('');
         setShowForm(false);
         setTransaction([...transaction, res.data.newTransaction]);
-       
+
       }
     } catch (error) {
       console.log(error);
     }
-  
-}
 
-useEffect(()=>{
-  try {
-    axios.get("/api/v1/getAllTransaction").then((response)=>{
-      console.log(response.data.getTransaction);
-      setTransaction(response.data.getTransaction)
-      
+  }
+
+  const getallTransaction = ()=>{
+    try {
+      axios.get("/api/v1/getAllTransaction").then((response) => {
+        // console.log(response.data.getTransaction);
+        setTransaction(response.data.getTransaction)
+
+      }
+      )
+    } catch (error) {
+      console.log(error)
     }
-    )
-  } catch (error) {
-    console.log(error)
   }
-},[])
+
+  useEffect(() => {
+   getallTransaction();
+  }, [])
 
 
-const handleDelete = async (id: string) => {
-  try {
-    let answer = window.prompt("Are You Sure want to delete this transaction ? ");
-    if (!answer) return;
-    const { data } = await axios.delete(
-      `/api/v1/delete-transaction/${id}`
-    );
-    toast.success("Product Deleted Successfully");
-  } catch (error) {
-    console.log(error);
-    toast.error("Something went wrong");
-  }
-};
- 
+  const handleDelete = async (id: string) => {
+    try {
+      let answer = window.prompt("Are You Sure want to delete this transaction ? ");
+      if (!answer) return;
+      const  {data}  = await axios.delete(
+        `/api/v1/delete-transaction/${id}`
+      );
+        getallTransaction();
+
+      toast.success("Product Deleted Successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
+  };
 
 
-const toggleForm = (): void => {
-  setShowForm(!showForm);
-};
+
+  const toggleForm = (): void => {
+    setShowForm(!showForm);
+  };
 
 
   const toggleDropdown = (): void => {
@@ -146,7 +153,7 @@ const toggleForm = (): void => {
           <div className="w-[20px] lg:w-1/4 bg-slack-50 lg:rounded-r-lg p-4 lg:p-10">
             <div className="mt-4 relative">
 
-             <Menu/>
+              <Menu />
 
             </div>
           </div>
@@ -166,7 +173,7 @@ const toggleForm = (): void => {
                         Transaction Name
                       </label>
                       <input
-                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
                         type="text"
                         value={name}
                         className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
@@ -177,7 +184,7 @@ const toggleForm = (): void => {
                         Description
                       </label>
                       <input
-                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDiscription(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDiscription(e.target.value)}
                         type="text"
                         value={discription}
                         className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
@@ -188,7 +195,7 @@ const toggleForm = (): void => {
                         Date
                       </label>
                       <input
-                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDate(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDate(e.target.value)}
                         type="date"
                         value={date}
                         className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
@@ -206,8 +213,8 @@ const toggleForm = (): void => {
                         className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                       >
                         <option value="">Select Category</option>
-                        {categories.map((ele,id)=>{
-                          return  <option key={id} value={ele.category}>{ele.category}</option>
+                        {categories.map((ele, id) => {
+                          return <option key={id} value={ele.category}>{ele.category}</option>
 
                         })}
                         {/* 
@@ -221,7 +228,7 @@ const toggleForm = (): void => {
                         Payment
                       </label>
                       <input
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPaymet(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPaymet(e.target.value)}
                         type="number"
                         value={payment}
                         className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
@@ -232,7 +239,7 @@ const toggleForm = (): void => {
                         End-Date
                       </label>
                       <input
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEnd_Date(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEnd_Date(e.target.value)}
                         type="date"
                         value={end_date}
                         className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
@@ -261,7 +268,7 @@ const toggleForm = (): void => {
                       <select
                         id="category"
                         name="category"
-                       value={mode}
+                        value={mode}
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setMode(e.target.value)}
                         className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                       >
@@ -301,12 +308,12 @@ const toggleForm = (): void => {
                       })}
                     </div>
                   </div>
-                </div>  
+                </div>
               </div>
 
-              <div className="max-h-80 mt-4 overflow-y-auto">
+              <div className="max-h-80 mt-10 overflow-y-auto table-container">
                 <table className="table-auto w-full border-collapse border border-gray-800">
-                  <thead>
+                  <thead className="sticky-thead">
                     <tr className="border-blue-400 text-primaryColor">
                       <th className="border border-blue-400 px-4 py-2">Id</th>
                       <th className="border border-blue-400 px-4 py-2">Name</th>
@@ -322,7 +329,7 @@ const toggleForm = (): void => {
                     </tr>
                   </thead>
                   <tbody>
-                    {transaction.map((transaction,index) => ( 
+                    {transaction.map((transaction, index) => (
                       <tr className="">
                         <td className="border border-blue-400 px-4 py-2">{index}</td>
                         <td className="border border-blue-400 px-4 py-2">{transaction.name}</td>
@@ -339,13 +346,13 @@ const toggleForm = (): void => {
                           </button>
                         </td>
                         <td className="border border-blue-400 px-4 py-2">
-                          <button  className='bg-red-500 text-white px-4 py-2 rounded'>
+                          <button onClick={()=>handleDelete(transaction._id)} className='bg-red-500 text-white px-4 py-2 rounded'>
                             Delete
                           </button>
                         </td>
 
                       </tr>
-                   ))}
+                    ))}
                   </tbody>
                 </table>
               </div>

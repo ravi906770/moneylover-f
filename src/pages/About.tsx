@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-// import bg from "../assets/hero-bg.png"
+import bg from "../assets/hero-bg.png"
 import heroImg01 from "../assets/about04.avif"
 import play from "../assets/playstore.png"
 
@@ -10,7 +10,7 @@ const About = (props: Props) => {
 
   return (
     <>
-      <section className=" flex items-center bg-no-repeat bg-center bg-cover py-[20px] 2xl:h-[800px]">
+      <section className=" flex items-center bg-no-repeat bg-center bg-cover py-[20px] 2xl:h-[800px]"  style={{ backgroundImage: `url(${bg})` }}>
         <div className="max-w-full w-[1440px] px-5 mx-auto">
           <div className="lg:w-[500px] mx-auto">
             <h2 className="text-[44px] leading-[54px] font-[700] text-headingColor text-center">About us</h2>

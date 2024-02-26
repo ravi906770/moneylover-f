@@ -1,8 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Chart, { ChartConfiguration } from 'chart.js/auto';
 
 const LineChart = () => {
      const chartRef = useRef<Chart<"line", unknown> | null>(null);
+
+
+     const [tdata , setTdata] = useState<Number[]>([]);
 
   useEffect(() => {
     const ctx = document.getElementById('LineChart') as HTMLCanvasElement;
