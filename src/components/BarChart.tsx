@@ -1,10 +1,21 @@
 import React, { useEffect, useRef } from 'react';
 import Chart, { ChartConfiguration } from 'chart.js/auto';
 
-type Props = {};
+type Props = {
+  categoryData : {category : string , totalAmount : number}[];
+  fetchCategory : ()=>void
+};
 
-const BarChart = (props: Props) => {
+
+
+const BarChart : React.FC<Props> = ({categoryData,fetchCategory}) => {
   const chartRef = useRef<Chart | null>(null);
+
+  useEffect(()=>{
+   
+    fetchCategory();
+   },[])
+
 
   useEffect(() => {
     const ctx = document.getElementById('myChart') as HTMLCanvasElement;
@@ -13,10 +24,10 @@ const BarChart = (props: Props) => {
       const config: ChartConfiguration<'bar'> = {
         type: 'bar',
         data: {
-          labels: ['Hospital', 'Fule', 'Shopping', 'Food', 'Rent', 'Travel'],
+          labels: categoryData.map(item=>item.category),
           datasets: [{
             label: 'Expense',
-            data: [1000, 1500, 2000, 1800, 2500, 3000],
+            data: categoryData.map(item=>item.totalAmount),
             backgroundColor: [
               'rgba(255, 99, 132, 0.2)',
       'rgba(255, 159, 64, 0.2)',
@@ -47,10 +58,11 @@ const BarChart = (props: Props) => {
 
       chartRef.current = new Chart(ctx, config);
     } else {
-      chartRef.current.data.datasets[0].data = [1000, 1500, 2000, 1800, 2500, 3000];
+      chartRef.current.data.datasets[0].data = categoryData.map(item=>item.totalAmount);
+      chartRef.current.data.labels = categoryData.map(item => item.category)
       chartRef.current.update();
     }
-  }, []);
+  }, [categoryData]);
 
   return (
     <div className="h-96 w-96 mt-20">

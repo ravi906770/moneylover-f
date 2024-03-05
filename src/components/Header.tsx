@@ -3,8 +3,10 @@ import { NavLink, Link } from "react-router-dom";
 import { BiMenu } from "react-icons/bi";
 import logo from "../assets/logo2.png"
 import userImg from "../assets/avatar-icon.png"
+import userImg2 from "../assets/userimg.jpg"
 import bg from "../assets/header-bg.png"
-// import { useAuth } from "../context/authContext";
+import { useAuth } from "../context/authContext";
+
 
 
 
@@ -37,15 +39,24 @@ const navLinks = [
         path: '/feedback',
         display: 'Feedback'
     },
-    {
-        path: '/faq',
-        display: 'FAQ'
-    }
+    // {
+    //     path: '/faq',
+    //     display: 'FAQ'
+    // }
 ]
 
 const Header: React.FC = () => {
 
-    // const {setAuth} = useAuth();
+    const { auth  , logout} = useAuth();
+
+  
+
+
+    const handleLogout = () => {
+        logout(); // Trigger the logout function
+        // console.log("++++++++++");
+        // console.log(auth)
+      };
 
 
     const headerRef = useRef<HTMLElement>(null);
@@ -63,17 +74,17 @@ const Header: React.FC = () => {
         };
 
         window.addEventListener("scroll", handleScroll);
-    
+
 
         return () => {
             window.removeEventListener("scroll", handleScroll);
         };
-    }, []); 
+    }, []);
 
 
     const toggleMenu = () => menuRef.current?.classList.toggle('show_menu');
 
-
+    
 
     return (
 
@@ -82,12 +93,12 @@ const Header: React.FC = () => {
                 <div className="flex items-center justify-between">
 
                     {/* logo  */}
-                    <Link to="/"> 
-                    <div>
-                        <img src={logo} alt="" className="w-[250px] h-[30px]" />
-                    </div>
+                    <Link to="/">
+                        <div>
+                            <img src={logo} alt="" className="w-[250px] h-[30px]" />
+                        </div>
                     </Link>
-                   
+
 
 
                     {/* menuitem */}
@@ -111,28 +122,54 @@ const Header: React.FC = () => {
                     </div>
 
 
+                    {
+                        auth.access_token ? (
+                            <>
+                                <div className="flex items-center gap-4">
+                                    <div className="">
+                                        <Link to="/">
+                                            <figure className="w-[35px] h-[35px] rounded-full cursor-pointer">
+                                                <img className="w-full rounded-full" src={userImg} alt="" />
+                                            </figure>
+                                        </Link>
+                                    </div>
+
+                                    <Link to="/login">
+                                        <button  onClick={handleLogout} className="bg-primaryColor hover:bg-green-400 text-white py-2 px-6 font-[600] h-[44px] flex items-center justify-center
+                  rounded-[50px]">Logout</button>
+                                    </Link>
+                                    <span className="md:hidden" onClick={toggleMenu}>
+                                        <BiMenu className="w-6 h-6 cursor-pointer" />
+                                    </span>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="flex items-center gap-4">
+                                <div className="">
+                                    <Link to="/">
+                                        <figure className="w-[35px] h-[35px] rounded-full cursor-pointer">
+                                            <img className="w-full rounded-full" src={userImg2} alt="" />
+                                        </figure>
+                                    </Link>
+                                </div>
+
+                                <Link to="/register">
+                                    <button className="bg-primaryColor hover:bg-green-400 text-white py-2 px-6 font-[600] h-[44px] flex items-center justify-center
+                      rounded-[50px]">SignUp</button>
+                                </Link>
+                                <span className="md:hidden" onClick={toggleMenu}>
+                                    <BiMenu className="w-6 h-6 cursor-pointer" />
+                                </span>
+                            </div>
+                        )
+                    }
+
 
                     {/* nav right */}
-                    <div className="flex items-center gap-4">
-                        <div className="">
-                            <Link to="/">
-                                <figure className="w-[35px] h-[35px] rounded-full cursor-pointer">
-                                    <img className="w-full rounded-full" src={userImg} alt="" />
-                                </figure>
-                            </Link>
-                        </div>
 
-                        <Link to="/register">
-                            <button className="bg-primaryColor hover:bg-green-400 text-white py-2 px-6 font-[600] h-[44px] flex items-center justify-center
-                  rounded-[50px]">Sign Up</button>
-                        </Link>
-                        <span className="md:hidden" onClick={toggleMenu}>
-                            <BiMenu className="w-6 h-6 cursor-pointer" />
-                        </span>
-                    </div>
                 </div>
             </div>
-        </header> 
+        </header>
     )
 }
 

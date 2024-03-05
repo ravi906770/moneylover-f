@@ -1,115 +1,154 @@
-import React , {useState} from 'react'
-import {Link, useLocation, useNavigate} from "react-router-dom"
-import register from "../assets/signup.gif"
+import React, { useState } from 'react'
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import registerImg from "../assets/signup.gif"
 import bg from "../assets/hero-bg.png"
-import {useAuth}  from '../context/authContext'
+import { useAuth } from '../context/authContext'
 import axios from 'axios'
+import { FaGoogle } from 'react-icons/fa6'
+import {toast} from 'react-toastify'
+import { useForm } from 'react-hook-form'
 
 type Props = {}
+  
+type formValue = {
+  email : string,
+  password : string
+}
+
 
 const Login = (props: Props) => {
 
+ 
+  const form = useForm<formValue>();
+  const {register , handleSubmit ,formState , getValues} = form;
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const {setAuth} = useAuth();
+  const { auth , setAuth } = useAuth();
+
+  const {errors} = formState
 
 
   const navigate = useNavigate();
   const location = useLocation();
-  
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+
+  const onSubmit = async (data : formValue) => {
     try {
-      const res = await axios.post(`/api/v1/login`, {
-        email,
-        password,
-      },{
-        headers : {"Content-Type" : "application/json"},
-        withCredentials : true
-    });
+      const res = await axios.post('http://localhost:5000/api/v1/login', 
+      data
+, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true
+      }
+      )
 
-    console.log(res)
-
-    if(res){
-      const access_token = res?.data.access_token;
-      localStorage.setItem("access_token",access_token)
-      setAuth({user:{
-        email,
-        password
-      } ,access_token})
-
-      navigate("/")
-    }
-    // console.log(res.data)
-   
+      // console.log(res)
+      if (res && res.data.success) {
+        // toast.success("Login Successfully!!")
+        const access_token = res.data.access_token;
+       
+        localStorage.setItem("user", access_token);
+        setAuth({
+          user: {
+          email : getValues("email"),
+          },
+          access_token
+        })
+        // setTimeout(()=>{
+        //   console.log(auth)
+        // },5000)
+       
+        navigate("/")
+      
+      }
     } catch (error) {
-      console.log(error);
+        toast.error("Something went wrong!!")
     }
   };
 
   return (
     <>
-    <section className=" flex items-center  bg-no-repeat bg-center bg-cover py-[60px] 2xl:h-[800px]" style={{ backgroundImage: `url(${bg})` }}>
-      <div className="max-w-full w-[1440px] px-5 mx-auto">
-        <div className="flex flex-col lg:flex-row gap-[90px] items-center justify-between">
+      <section className=" flex items-center  bg-no-repeat bg-center bg-cover py-[60px] 2xl:h-[800px]" style={{ backgroundImage: `url(${bg})` }}>
+        <div className="max-w-full w-[1440px] px-5 mx-auto">
+          <div className="flex flex-col lg:flex-row gap-[90px] items-center justify-between">
 
-          {/* ================== Hero Content ================== */}
-          <div className="justify-between items-end">
-            <img src={register} alt="" className="w-full rounded-full" />
-          </div>
-          {/* ================== Hero Content ================== */}
-          <div className="flex gap-[30px] justify-between items-start w-full">
-            <form className="w-full max-w-lg" onSubmit={()=>handleSubmit}>
-              <div className="flex flex-wrap -mx-3 mb-6">
-                <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                  <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-first-name">
-                    email
-                  </label>
-                  <input  onChange={(e) => setEmail(e.target.value)} className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" id="grid-first-name" type="text" placeholder="Enter Your Email" required />
+            {/* ================== Hero Content ================== */}
+            <div className="justify-between items-end">
+              <img src={registerImg} alt="" className="w-full rounded-full" />
+            </div>
+            {/* ================== Hero Content ================== */}
+            <div className="flex gap-[30px] justify-between items-start w-full">
+              <form className="w-full max-w-lg" noValidate onSubmit= {handleSubmit(onSubmit)}>
+                <button type="button" className="text-black  bg-gray-200 focus:ring-4 gap-3 justify-center focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-10">
+                  <FaGoogle />
+                  Sign in with Google
+                </button>
+                <div className="flex flex-wrap -mx-3 mb-6">
+                  <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="email" >
+                      email
+                    </label>
+                    <input  className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" id="email" type="text" placeholder="Enter Your Email" {...register("email",{
+                    required :{
+                        value:true,
+                        message : "email is required",
+                    } ,
+                    pattern :{
+                      value : /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                      message : "Invalid email format"
+                    }
+                },
+                )} />
+                  </div>
+
                 </div>
-                
-              </div>
-              <div className="w-full md:w-1/2">
-                  <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                <p className='text-red-700'>{errors.email?.message}</p>
+                <div className="w-full md:w-1/2">
+                  <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="password" >
                     password
                   </label>
-                  <input  onChange={(e) => setPassword(e.target.value)} className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-last-name" type="password" placeholder="Enter Your Password" required />
-                </div>
-                <Link to="/forgot-password">
-                <div className="w-full md:w-1/2 mt-10">
-                  <label className="block uppercase tracking-wide text-primaryColor underline text-xs font-bold mb-2">
-                    Forgot Password
-                  </label>
-                </div>
-                </Link>
-               
-              <div className="flex flex-wrap -mx-3 mb-2">
-                <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+                  <input  className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="password" type="password" placeholder="Enter Your Password" {...register("password",{
+                    required :{
+                        value:true,
+                        message : "password is required",
+                    } 
                   
-                    <button type='submit' className="mt-10 bg-primaryColor text-white w-full h-full font-bold hover:bg-green-400 rounded-full">Login</button>
-  
+                },
+                )}/>
                 </div>
-              </div>
-
-              <Link to="/register">
-                <div className="flex flex-wrap -mx-3 mt-[75px]">
-                  <div className="w-full px-3">
-                    <label className="block tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-password">
-                      Don't have an Account ? Go to <span className='text-primaryColor text-[15px] font-bold underline'>Register</span>
+                <p className='text-red-700'>{errors.password?.message}</p>
+                <Link to="/forgot-password">
+                  <div className="w-full md:w-1/2 mt-10">
+                    <label className="block uppercase tracking-wide text-primaryColor underline text-xs font-bold mb-2">
+                      Forgot Password
                     </label>
                   </div>
-                </div>
                 </Link>
-            </form>
-            
+
+                <div className="flex flex-wrap -mx-3 mb-2">
+                  <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+
+                    <button type='submit' className="mt-10 bg-primaryColor text-white w-full h-[50px] font-bold hover:bg-green-400 rounded-full">Login</button>
+                    {/* <Toaster/> */}
+                  </div>
+                </div>
+
+                <Link to="/register">
+                  <div className="flex flex-wrap -mx-3 mt-[75px]">
+                    <div className="w-full px-3">
+                      <label className="block tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-password">
+                        Don't have an Account ? Go to <span className='text-primaryColor text-[15px] font-bold underline'>Register</span>
+                      </label>
+                    </div>
+                  </div>
+                </Link>
+              </form>
+
+            </div>
+
+
           </div>
-
-
         </div>
-      </div>
-    </section>
+      </section>
     </>
   )
 }

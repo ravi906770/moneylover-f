@@ -1,11 +1,33 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Chart, { ChartConfiguration } from 'chart.js/auto';
+import axios from 'axios';
 
-const LineChart = () => {
+interface Props{
+  transactionData:{ month: string; payment: number }[],
+  fetch:()=>void
+}
+
+const LineChart: React.FC<Props> = ({transactionData,fetch}) => {
      const chartRef = useRef<Chart<"line", unknown> | null>(null);
 
 
-     const [tdata , setTdata] = useState<Number[]>([]);
+    //  const [transactionData , setTransactionData] = useState<{ month: string; payment: number }[]>([]);
+
+     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    
+     useEffect(()=>{
+   
+      fetch();
+     },[])
+    //  useEffect(()=>{
+   
+    //   fetch();
+    //   console.log("$#$#$#%$#%$#%");
+      
+    //   console.log(transactionData);
+      
+    //  },[])
+
 
   useEffect(() => {
     const ctx = document.getElementById('LineChart') as HTMLCanvasElement;
@@ -17,7 +39,7 @@ const LineChart = () => {
           labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
           datasets: [{
             label: 'Expenses',
-            data: [1000, 1500, 2000, 1800, 2500, 3000, 2200, 1800, 2000, 2800, 3200, 2000],
+            data:  transactionData.map(item => item.payment),
             backgroundColor: [
               '#FF6384',
               '#36A2EB',
@@ -45,10 +67,11 @@ const LineChart = () => {
 
       chartRef.current = new Chart(ctx, config);
     } else if (chartRef.current) {
-      chartRef.current.data.datasets[0].data = [1000, 1500, 2000, 1800, 2500, 3000, 2200, 1800, 2000, 2800, 3200, 2000];
+      chartRef.current.data.labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+      chartRef.current.data.datasets[0].data = transactionData.map(item => item.payment);
       chartRef.current.update();
     }
-  }, [chartRef]);
+  }, [transactionData]);
 
   return (
     <div className="h-96 w-190">

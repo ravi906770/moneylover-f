@@ -1,17 +1,21 @@
 import React from 'react'
 import { Route , Routes } from 'react-router-dom';
-import Register from '../pages/Register';
-import Homepage from '../pages/Homepage';
-import Login from '../pages/Login';
-import Category from '../pages/Category';
-import Transaction from '../pages/Transaction';
-import Blog from '../pages/Blog';
-import About from '../pages/About';
-import Feedback from '../pages/Feedback';
-import ContactUs from '../pages/ContactUs';
-import Account from '../pages/Account';
-import FAQ from '../pages/FAQ';
-import ForgotPassword from '../pages/ForgotPassword';
+// import ErrorBoundary from '../ErrorBoundry/ErrorBoundry';
+import Error from '../ErrorBoundry/Error';
+const Register = React.lazy(()=>import('../pages/Register')) ;
+const Homepage = React.lazy(()=>import('../pages/Homepage')) ;
+const Login = React.lazy(()=>import('../pages/Login')) ;
+const Category = React.lazy(()=>import('../pages/Category')) ;
+const Transaction = React.lazy(()=>import('../pages/Transaction')) ;
+const Blog = React.lazy(()=>import('../pages/Blog')) ;
+const About = React.lazy(()=>import('../pages/About')) ;
+const Feedback = React.lazy(()=>import('../pages/Feedback')) ;
+
+const Account = React.lazy(()=>import('../pages/Account')) ;
+const ForgotPassword = React.lazy(()=>import('../pages/ForgotPassword')) ;
+const UseForm = React.lazy(()=>import('../pages/UseForm')) ;
+const YupForm = React.lazy(() => import('../pages/YupForm'));
+const ContactUs = React.lazy(()=>import('../pages/ContactUs')) ;
 
 
 type Props = {}
@@ -19,7 +23,7 @@ type Props = {}
 const Routing = (props: Props) => {
   return (
     <>
-   
+    <React.Suspense>
     <Routes>
         <Route path='/' element={<Homepage/>}/>
         <Route path='/register' element={<Register/>}/>
@@ -32,9 +36,13 @@ const Routing = (props: Props) => {
         <Route path='/feedback' element={<Feedback/>}/>
         <Route path='/contact' element={<ContactUs/>}/>
         <Route path='/account' element={<Account/>}/>
-        <Route path='/faq' element={<FAQ/>}/>
+        <Route path='/useForm' element={<UseForm/>}/>
         <Route path='/forgot-password' element={<ForgotPassword/>}/>
+        <Route path='/form' element={<YupForm/>}/>
+        <Route path='/error' element={<Error/>}/>
     </Routes>
+    </React.Suspense>
+ 
     </>
   )
 }

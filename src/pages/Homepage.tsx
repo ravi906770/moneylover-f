@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import heroImg01 from "../assets/hero-img05.avif"
 // import heroImg02 from "../assets/hero-img02.png"
 // import heroImg03 from "../assets/hero-img03.png"
@@ -9,10 +9,34 @@ import icon4 from "../assets/service02.avif"
 import bg from "../assets/hero-bg.png"
 import { Link } from "react-router-dom"
 import { BsArrowRight } from "react-icons/bs"
+import { useAuth } from '../context/authContext'
+import Testimonial from '../components/Testinomial'
+import FaqList from '../components/FAQ/FaqList'
+import faqimg from "../assets/faq.jpg"
+
+
 
 type Props = {}
 
 const Homepage = (props: Props) => {
+
+    const { auth } = useAuth();
+    const [isVideoVisible, setIsVideoVisible] = useState<boolean>(false);
+
+    // useEffect(() => {
+    //   console.log(auth);
+    //   console.log(
+    //     "$#@$@$@#$@#$@#"
+    //   );
+      
+    
+    // }, [])
+    
+
+    const toggleVideoVisibility = (): void => {
+        setIsVideoVisible(!isVideoVisible);
+      };
+
     return (
         <>
             {/* ================== Hero Section ================== */}
@@ -30,10 +54,30 @@ const Homepage = (props: Props) => {
 
                                 <p className="text-[18px] leading-[30px] font-[400] text-textColor mt-[18px]">Simplify expense tracking with our intuitive platform. Easily record, categorize, and analyze spending habits to make informed financial decisions effortlessly.
                                 </p>
-                                <Link to="/register">
-                                <button className="bg-primaryColor py-[15px] px-[35px] hover:bg-green-400 rounded-[50px] text-white font-[600] mt-[38px]">Sign Up Free</button>
-                                </Link>
-                                
+                                {
+                                    auth.access_token ? (
+                                        <>
+                                             <div className="video-container">
+                                            <button  onClick={toggleVideoVisibility} className= "start-tutorial-button bg-primaryColor py-[15px] px-[35px] hover:bg-green-400 rounded-[50px] text-white font-[600] mt-[38px]">Start a Tutorial</button>
+                                            {/* {isVideoVisible && (
+                                                <div className="video-overlay">
+                                                    <video controls autoPlay>
+                                                        <source src={require("../assets/")} type="video/mp4"/>
+                                                        Your browser does not support the video tag.
+                                                    </video>
+                                                </div>
+                                            )} */}
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Link to="/register">
+                                                <button className="bg-primaryColor py-[15px] px-[35px] hover:bg-green-400 rounded-[50px] text-white font-[600] mt-[38px]">Sign Up Free</button>
+                                            </Link>
+                                        </>
+                                    )
+                                }
+
                             </div>
 
 
@@ -81,14 +125,14 @@ const Homepage = (props: Props) => {
 
             <section className=" flex items-center bg-no-repeat bg-center bg-cover py-[60px] 2xl:h-[800px]">
                 <div className="max-w-full w-[1440px] px-5 mx-auto">
-                <div className="lg:w-[500px] mx-auto">
+                    <div className="lg:w-[500px] mx-auto">
                         <h2 className="text-[44px] leading-[54px] font-[700] text-headingColor text-center">About us</h2>
                         <p className="text-[18px] leading-[30px] font-[400] text-textColor mt-[18px] text-center">Our Commitment to Simplifying Your Financial Journey.</p>
                     </div>
                     <div className="flex flex-col lg:flex-row gap-[90px] items-center justify-between">
 
                         {/* ================== Hero Content ================== */}
-                        <img src={icon4} alt="" className='rounded-full'/>
+                        <img src={icon4} alt="" className='rounded-full' />
                         {/* ================== Hero Content ================== */}
                         <div className="flex gap-[30px] justify-end">
                             <p className='text-textColor text-[20px]'>
@@ -275,9 +319,49 @@ const Homepage = (props: Props) => {
             </section>
 
 
+            {/* ================== faq section ================== */}
+
+ <section>
+        <div className="container max-w-full w-[1440px] px-5 mx-auto">
+          <div className="flex justify-between gap-[50px] lg:gap-0">
+            <div className="w-1/2 hidden md:block">
+              <img src={faqimg} alt="" />
+            </div>
+ 
+          <div className="w-full md:w-1/2">
+            <h2 className="text-[44px] leading-[54px] font-[700] text-headingColor">Frequently asked questions</h2>
+            <FaqList/>
+          </div>
+ 
+          </div>
+        </div>
+      </section>
+
+
+             {/* ================== testinmonial section ================== */}
+
+
+            <section>
+      <div className="container max-w-full w-[1440px] px-5 mx-auto">
+      <div className="lg:w-[500px] mx-auto mt-10">
+          <h2 className="text-[44px] leading-[54px] font-[700] text-headingColor text-center">What our Users say</h2>
+          <p className="text-[18px] leading-[30px] font-[400] text-textColor mt-[18px] text-center">Our Commitment to Simplifying Your Financial Journey.</p>
+      </div>
+ 
+<Testimonial/>
+ 
+        </div>
+      </section>
+
+
+
+ 
+
+
+
             {/* ================== footer section ================== */}
 
-           
+
 
         </>
     )

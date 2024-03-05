@@ -185,7 +185,7 @@ export const Filters = [
   
 
 
-  export const  Categories = [
+  export const  filter = [
     {
       _id : 1,
       category : "food" 
@@ -219,3 +219,151 @@ export const Filters = [
       category : "misc" 
     }
   ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//   import React from 'react';
+// import { useForm } from 'react-hook-form';
+
+// function YourFormComponent() {
+//   const { register, handleSubmit, formState: { errors } } = useForm();
+
+//   const onSubmit = (data) => {
+//     console.log(data);
+//     // You can perform form submission logic here
+//   };
+
+//   return (
+//     <div className="relative ml-[860px]">
+//       <button onClick={toggleForm} className="bg-blue-500 hover:bg-green-300 text-white font-bold py-2 px-4 rounded">
+//         Add Transaction
+//       </button>
+//       {showForm && (
+//         <div className="absolute top-10 right-0 z-10 bg-white p-8 rounded-lg shadow-lg">
+//           <form className="space-y-1 w-[500px]" onSubmit={handleSubmit(onSubmit)}>
+//             <div>
+//               <label htmlFor="transactionName" className="block text-sm font-medium text-gray-700">
+//                 Transaction Name
+//               </label>
+//               <input
+//                 type="text"
+//                 {...register('name', { required: true })}
+//                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+//               />
+//               {errors.name && <span className="text-red-500">This field is required</span>}
+//             </div>
+//             <div>
+//               <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+//                 Description
+//               </label>
+//               <input
+//                 type="text"
+//                 {...register('description', { required: true })}
+//                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+//               />
+//               {errors.description && <span className="text-red-500">This field is required</span>}
+//             </div>
+//             <div>
+//               <label htmlFor="date" className="block text-sm font-medium text-gray-700">
+//                 Date
+//               </label>
+//               <input
+//                 type="date"
+//                 {...register('date', { required: true })}
+//                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+//               />
+//               {errors.date && <span className="text-red-500">This field is required</span>}
+//             </div>
+//             <div>
+//               <label htmlFor="category" className="block text-sm font-medium text-gray-700">
+//                 Category
+//               </label>
+//               <select
+//                 {...register('category', { required: true })}
+//                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+//               >
+//                 <option value="">Select Category</option>
+//                 <option value="food">Food</option>
+//                 <option value="shopping">Shopping</option>
+//                 <option value="travel">Travel</option>
+//               </select>
+//               {errors.category && <span className="text-red-500">This field is required</span>}
+//             </div>
+//             <div>
+//               <label htmlFor="payment" className="block text-sm font-medium text-gray-700">
+//                 Payment
+//               </label>
+//               <input
+//                 type="number"
+//                 {...register('payment', { required: true })}
+//                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+//               />
+//               {errors.payment && <span className="text-red-500">This field is required</span>}
+//             </div>
+//             <div>
+//               <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">
+//                 End Date
+//               </label>
+//               <input
+//                 type="date"
+//                 {...register('endDate', { required: true })}
+//                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+//               />
+//               {errors.endDate && <span className="text-red-500">This field is required</span>}
+//             </div>
+//             <div>
+//               <label htmlFor="status" className="block text-sm font-medium text-gray-700">
+//                 Status
+//               </label>
+//               <select
+//                 {...register('status', { required: true })}
+//                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+//               >
+//                 <option value="">Transaction Status</option>
+//                 <option value="completed">Completed</option>
+//                 <option value="pending">Pending</option>
+//               </select>
+//               {errors.status && <span className="text-red-500">This field is required</span>}
+//             </div>
+//             <div>
+//               <label htmlFor="mode" className="block text-sm font-medium text-gray-700">
+//                 Transaction Mode
+//               </label>
+//               <select
+//                 {...register('mode', { required: true })}
+//                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+//               >
+//                 <option value="">Transaction Mode</option>
+//                 <option value="online">Online</option>
+//                 <option value="offline">Offline</option>
+//               </select>
+//               {errors.mode && <span className="text-red-500">This field is required</span>}
+//             </div>
+//             <div className="text-right">
+//               <button
+//                 type="submit"
+//                 className="bg-blue-500 hover:bg-green-400 text-white font-bold mt-10 py-2 px-4 rounded focus:outline-none"
+//               >
+//                 Submit
+//               </button>
+//             </div>
+//           </form>
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
+// export default YourFormComponent;

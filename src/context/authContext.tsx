@@ -4,10 +4,10 @@ import { createContext, useState, useEffect, useContext, ReactNode } from 'react
 interface AuthData {
   user : {
     email: string;
-    password : string;
-  }
- // Define your user type here
+  },
   access_token: string;
+ // Define your user type here
+  
 }
 
 interface AuthContextType {
@@ -23,24 +23,25 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [auth, setAuth] = useState<AuthData>({
     user : {
-      email : '',
-      password : ''
+      email : ''
     },
-    access_token: localStorage.getItem('access_token') || '', // Initialize with token from local storage
+    access_token: localStorage.getItem("user") || '',
+    // Initialize with token from local storage
   });
 
   const logout = () => {
     // Clear user session without removing details from local storage
     setAuth({ user: {
-      email : '',
-      password : ''
-    }, access_token: '' });
-    localStorage.removeItem('access_token'); 
+      email : ''
+     
+    },
+    access_token: ''  });
+    localStorage.removeItem("user"); 
   };
 
   useEffect(() => {
     // Check if token exists in local storage on app initialization
-    const access_token = localStorage.getItem('access_token');
+    const access_token = localStorage.getItem('user');
     if (access_token) {
       setAuth((prevAuth) => ({ ...prevAuth,  access_token}));
     }

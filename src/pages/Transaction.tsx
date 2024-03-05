@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import BarChart from '../components/BarChart';
 import PieChart from '../components/PieChart';
 import bg from "../assets/hero-bg.png";
@@ -7,11 +7,12 @@ import { Filters } from '../components/Filter';
 import { dummy } from '../components/Filter';
 import LineChart from '../components/LineChart';
 import { FaFilter } from "react-icons/fa";
-import { useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import Menu from '../components/Menu';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-
+import { useForm } from 'react-hook-form';
+import Datepicker from "react-tailwindcss-datepicker";
 type Props = {};
 
 
@@ -23,9 +24,9 @@ interface Category {
 
 
 interface Transaction {
-  _id : string;
+  _id: string;
   name: string;
-  discription: string;
+  description: string;
   date: string;
   category: string;
   payment: string;
@@ -39,29 +40,57 @@ interface Transaction {
 
 const Transaction = (props: Props) => {
 
+  type formValue = {
+    name : string,
+    description : string,
+    date : Date,
+    category:string,
+    payment : number,
+    end_date : string,
+    status : string,
+    mode : string
+}
+
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [showForm, setShowForm] = useState<boolean>(false);
-  const [name, setName] = useState<string>('');
-  const [discription, setDiscription] = useState<string>('');
-  const [category, setCategory] = useState<string>('');
-  const [date, setDate] = useState<string>('');
-  const [end_date, setEnd_Date] = useState<string>('');
-  const [payment, setPaymet] = useState<string>('');
-  const [status, setStatus] = useState<string>('');
-  const [mode, setMode] = useState<string>('');
   const [categories, setCategories] = useState<Category[]>([])
-  // const [id, setId] = useState("");
   const [transaction, setTransaction] = useState<Transaction[]>([]);
+  const [flterTransaction, setFilterTransaction] = useState<Transaction[]>([]);
+  const [transactionData, setTransactionData] = useState<{ month: string; payment: number }[]>([]);
+  const [Open, setOpen] = useState(false);
 
+
+  const [val, setVal] = useState({
+    startDate: new Date(),
+    endDate: new Date()
+});
+
+const handleValueChange = (newValue : any )=> {
+    console.log("newValue:", newValue);
+    setVal(newValue);
+};
+
+
+  // const toggleDrop = () => {
+  //   setOpen(!Open);
+  // };
 
 
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const form = useForm<formValue>({})
+
+  const {register , handleSubmit ,setValue, formState} = form;
+
+  const {errors} = formState
+
+  const navigate = useNavigate()
+
   useEffect(() => {
     try {
-      axios.get("/api/v1/getCategory").then((response) => {
+      axios.get("http://localhost:5000/api/v1/getCategory").then((response) => {
         console.log(response.data.getCategory);
         setCategories(response.data.getCategory)
 
@@ -74,34 +103,44 @@ const Transaction = (props: Props) => {
     }
   }, [])
 
-  const handleTransaction = async (e: React.FormEvent<HTMLFormElement>) => {
-
-    e.preventDefault();
+  const onSubmit = async ( data : formValue) => {
     try {
-      const res = await axios.post(`/api/v1/transaction`, { name, discription, date, category, payment, end_date, status, mode })
+      const res = await axios.post(`http://localhost:5000/api/v1/transaction`,data )
       if (res && res.data.success) {
-        // console.log(res)
-        setName('');
-        setDiscription('');
-        setCategory('');
-        setDate('');
-        setEnd_Date('');
-        setPaymet('');
-        setStatus('');
-        setMode('');
         setShowForm(false);
-        setTransaction([...transaction, res.data.newTransaction]);
-
+        setTransaction([res.data.newTransaction, ...transaction]);
+        fetch()
+        setValue('name',"")
+        setValue('category',"")
+        setValue('date',new Date())
+        setValue('description',"")
+        setValue('end_date','')
+        setValue('mode',"")
+        setValue('payment',0)
+        setValue('status',"")
+        
       }
     } catch (error) {
       console.log(error);
     }
 
   }
-
-  const getallTransaction = ()=>{
+  const fetch = async () => {
     try {
-      axios.get("/api/v1/getAllTransaction").then((response) => {
+      const response = await axios.get('http://localhost:5000/api/v1/transaction-payment');
+      const data = response.data.newTransactionObject;
+      // const sortedData = data.sort((a: { month: string }, b: { month: string }) => {
+      //   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      //   return months.indexOf(a.month) - months.indexOf(b.month);
+      // });
+      setTransactionData(data);
+    } catch (error) {
+      console.error('Failed to fetch transaction data:', error);
+    }
+  }
+  const getallTransaction = () => {
+    try {
+      axios.get("http://localhost:5000/api/v1/getAllTransaction").then((response) => {
         // console.log(response.data.getTransaction);
         setTransaction(response.data.getTransaction)
 
@@ -113,7 +152,7 @@ const Transaction = (props: Props) => {
   }
 
   useEffect(() => {
-   getallTransaction();
+    getallTransaction();
   }, [])
 
 
@@ -121,11 +160,11 @@ const Transaction = (props: Props) => {
     try {
       let answer = window.prompt("Are You Sure want to delete this transaction ? ");
       if (!answer) return;
-      const  {data}  = await axios.delete(
-        `/api/v1/delete-transaction/${id}`
+      const { data } = await axios.delete(
+        `http://localhost:5000/api/v1/delete-transaction/${id}`
       );
-        getallTransaction();
-
+      getallTransaction();
+      fetch()
       toast.success("Product Deleted Successfully");
     } catch (error) {
       console.log(error);
@@ -143,6 +182,52 @@ const Transaction = (props: Props) => {
   const toggleDropdown = (): void => {
     setIsOpen(!isOpen);
   };
+
+  const handleLowTransactions = async () => {
+    const temp = [...transaction]
+    setFilterTransaction(temp.slice().sort((p1, p2) => (p1.payment < p2.payment) ? -1 : (p1.payment > p2.payment) ? 1 : 0));
+
+
+  }
+
+  const handleFilterhigh = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/v1/high-transaction")
+      setFilterTransaction(res.data.sorted)
+      // console.log(data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleCategory = async (event: ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue: string = event.target.value;
+    setFilterTransaction(transaction.filter((ele) => ele.category == selectedValue))
+  }
+
+
+    const handleStatus = async(event: ChangeEvent<HTMLSelectElement>)=>{
+      const selectedValue: string = event.target.value.toLowerCase();
+        setFilterTransaction(transaction.filter((ele) => ele.status == selectedValue))
+    
+    }
+
+
+  //   const handleDateFilter = () => {
+  //     const startDate = val.startDate;
+  //     const endDate = val.endDate;
+
+  //     const filteredData = transaction.filter(transaction => {
+  //         const transactionDate = transaction.date;
+  //         return transactionDate >= (startDate.toDateString()) && transactionDate <= (endDate.toDateString());
+  //     });
+  //     setFilterTransaction(filteredData);
+  // };
+
+  const handleRemoveFilters = async () => {
+    setFilterTransaction([])
+  }
+
 
 
 
@@ -166,51 +251,71 @@ const Transaction = (props: Props) => {
               {showForm && (
                 <div className="absolute top-10 right-0 z-10 bg-white p-8 rounded-lg shadow-lg">
                   {/* Your form elements go here */}
-                  <form className="space-y-1 w-[500px]" onSubmit={handleTransaction}>
+                  <form className="space-y-1 w-[500px]" onSubmit={handleSubmit(onSubmit)} noValidate>
                     {/* Example input field */}
                     <div>
                       <label htmlFor="transactionName" className="block text-sm font-medium text-gray-700">
                         Transaction Name
                       </label>
                       <input
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
                         type="text"
-                        value={name}
                         className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        {...register("name",{
+                          required :{
+                            value  : true,
+                            message : "Name is required!!"
+                          }
+                        })}
                       />
                     </div>
+                    <p className='text-red-700'>{errors.name?.message}</p>
                     <div>
                       <label htmlFor="transactionName" className="block text-sm font-medium text-gray-700">
                         Description
                       </label>
                       <input
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDiscription(e.target.value)}
-                        type="text"
-                        value={discription}
+                      type='text'
                         className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        {...register("description",{
+                          required :{
+                            value  : true,
+                            message : "Description is required!!"
+                          }
+                        })}
                       />
                     </div>
+                    <p className='text-red-700'>{errors.description?.message}</p>
                     <div>
                       <label htmlFor="transactionName" className="block text-sm font-medium text-gray-700">
                         Date
                       </label>
                       <input
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDate(e.target.value)}
                         type="date"
-                        value={date}
                         className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        {...register("date",{
+                          required :{
+                            value  : true,
+                            message : "Date is required!!"
+                          }
+                        })}
                       />
                     </div>
+                    <p className='text-red-700'>{errors.date?.message}</p>
                     <div>
                       <label htmlFor="transactionName" className="block text-sm font-medium text-gray-700">
                         Category
                       </label>
                       <select
                         id="category"
-                        name="category"
-                        value={category}
-                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCategory(e.target.value)}
+                        // value={category}
+                        // onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCategory(e.target.value)}
                         className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        {...register("category",{
+                          required :{
+                            value  : true,
+                            message : "Atleast One category is required!!"
+                          }
+                        })}
                       >
                         <option value="">Select Category</option>
                         {categories.map((ele, id) => {
@@ -223,60 +328,84 @@ const Transaction = (props: Props) => {
                         <option value="category3">Travel</option> */}
                       </select>
                     </div>
+                    <p className='text-red-700'>{errors.category?.message}</p>
                     <div>
                       <label htmlFor="transactionName" className="block text-sm font-medium text-gray-700">
                         Payment
                       </label>
                       <input
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPaymet(e.target.value)}
                         type="number"
-                        value={payment}
                         className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+
+                        {...register("payment",{
+                          required :{
+                            value  : true,
+                            message : "Payment is required"
+                          },
+                          min : {
+                            value : 0,
+                            message : " value must be greater than 0"
+                          }
+                        })}
                       />
                     </div>
+                    <p className='text-red-700'>{errors.payment?.message}</p>
                     <div>
                       <label htmlFor="transactionName" className="block text-sm font-medium text-gray-700">
                         End-Date
                       </label>
                       <input
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEnd_Date(e.target.value)}
                         type="date"
-                        value={end_date}
+                       
                         className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        {...register("end_date",{
+                          required :{
+                            value  : true,
+                            message : "End-date is required"
+                          }
+                        })}
                       />
                     </div>
+                    <p className='text-red-700'>{errors.end_date?.message}</p>
                     <div>
                       <label htmlFor="transactionName" className="block text-sm font-medium text-gray-700">
                         Status
                       </label>
                       <select
-                        id="category"
-                        name="category"
-                        value={status}
-                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStatus(e.target.value)}
                         className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+
+                        {...register("status",{
+                          required :{
+                            value  : true,
+                            message : "Status is required"
+                          }
+                        })}
                       >
                         <option value="">Transaction Status</option>
                         <option value="completed">Completed</option>
                         <option value="pending">Pending</option>
                       </select>
                     </div>
+                    <p className='text-red-700'>{errors.status?.message}</p>
                     <div>
                       <label htmlFor="transactionName" className="block text-sm font-medium text-gray-700">
                         Transaction Mode
                       </label>
                       <select
-                        id="category"
-                        name="category"
-                        value={mode}
-                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setMode(e.target.value)}
                         className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        {...register("mode",{
+                          required :{
+                            value  : true,
+                            message : "Mode is required"
+                          }
+                        })}
                       >
                         <option value="">Transaction Mode</option>
                         <option value="online">Online</option>
                         <option value="offline">Offline</option>
                       </select>
                     </div>
+                    <p className='text-red-700'>{errors.mode?.message}</p>
                     <div className="text-right">
                       <button
                         type="submit"
@@ -290,7 +419,7 @@ const Transaction = (props: Props) => {
               )}
             </div>
             <div className="p-4 justify-between items-center">
-              <LineChart />
+              <LineChart fetch={fetch} transactionData={transactionData} />
             </div>
             <div className="h-96  p-4 overflow-hidden">
               <div className='flex justify-between items-center '>
@@ -301,19 +430,76 @@ const Transaction = (props: Props) => {
 
                     <FaFilter className="w-full cursor-pointer" />
                   </div>
-                  <div ref={dropdownRef} className={`absolute right-0 mt-2 w-56 origin-top-right bg-white border border-gray-200 divide-y  rounded-md shadow-lg outline-none ${isOpen ? '' : 'hidden'} hover:visible`}>
-                    <div className="py-1">
-                      {Filters.map((e, index) => {
-                        return <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{e.name}</a>
-                      })}
+                  <div ref={dropdownRef}  className={`absolute right-0 mt-2 w-56 origin-top-right bg-white border border-gray-200 divide-y  rounded-md shadow-lg outline-none ${isOpen ? '' : 'hidden'} hover:visible`}>
+                    <div className='flex flex-col py-1'>
+                      <button className='m-3 hover:bg-blue-500 hover:text-white rounded justify-center text-center p-1' onClick={handleLowTransactions}>Low Amount transaction</button>
+                      <button className='m-3 hover:bg-blue-500 rounded  hover:text-white justify-center text-center p-1' onClick={handleFilterhigh}>High Amount transaction</button>
+
+                      <div className="relative w-full lg:max-w-sm flex items-center">
+                        <button className='m-3 hover:bg-blue-500 rounded  hover:text-white justify-center text-center p-1' >Category  </button>
+                          <select className="w-full p-2.5 text-black -500 shadow-sm outline-none appearance-none border border-solid border-[#000000] rounded" onChange={handleCategory}>
+                            {
+                              categories.map((e) =>
+                                <>
+                                  <option value={e.category}>{e.category}</option>
+                                </>
+                              )
+                            }
+                          </select>
+                      
+                      </div>
+
+                      <div className="relative w-full lg:max-w-sm flex items-center">
+                        <button className='m-3 hover:bg-blue-500 rounded  hover:text-white justify-center text-center p-1' >Status</button>
+                          <select className="w-full p-2.5 text-black -500 shadow-sm outline-none appearance-none border border-solid border-[#000000] rounded" onChange={handleStatus}>
+                          <option value={"pending"}>Pending</option>
+                          <option value={"completed"}>Completed</option>
+                          </select>
+                      
+                      </div>
+                      <button  type= "button" className='m-3 hover:bg-blue-500 hover:text-white rounded justify-center text-center p-1'  >
+                      <Datepicker value={val} onChange={handleValueChange} />
+                      </button>
+
+
+
+                      {/* <button className='m-3 hover:bg-blue-500 rounded  hover:text-white justify-center text-center p-1'>Date</button> */}
+
+            
+
+                      <button className='m-3 bg-red-500 text-white hover:text-white rounded justify-center text-center p-1' onClick={handleRemoveFilters}>Remove Filters</button>
                     </div>
+                    {/* <div className="py-1">
+                      
+                      <button className="block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={handleLowTransactions}>Low Amount Transaction</button>
+                      <button className="block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={handleFilterhigh}>High Amount Transaction</button>
+                      <div className='relative'>
+                      <button className="block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={toggleDrop}>Status
+                        {Open && (
+                           <div className="absolute top-5  mt-2 bg-white">
+                           Your dropdown content here
+                           <button onClick={handleComplete} className=" cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-blue-400">
+                             Completed
+                           </button>
+                           <button onClick={handlePending} className=" cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-blue-400">
+                             Pending
+                           </button>
+                           
+                           
+                         </div>
+                        )}
+                       
+                      </button>
+                      </div>
+                     
+                        </div>*/}
                   </div>
                 </div>
               </div>
 
-              <div className="max-h-80 mt-10 overflow-y-auto table-container">
-                <table className="table-auto w-full border-collapse border border-gray-800">
-                  <thead className="sticky-thead">
+              <div className="max-h-80 mt-10 overflow-y-auto">
+                <table className=" w-full border-collapse border border-gray-800">
+                  <thead className="">
                     <tr className="border-blue-400 text-primaryColor">
                       <th className="border border-blue-400 px-4 py-2">Id</th>
                       <th className="border border-blue-400 px-4 py-2">Name</th>
@@ -329,11 +515,11 @@ const Transaction = (props: Props) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {transaction.map((transaction, index) => (
+                    {flterTransaction.length === 0 && transaction.map((transaction, index) => (
                       <tr className="">
                         <td className="border border-blue-400 px-4 py-2">{index}</td>
                         <td className="border border-blue-400 px-4 py-2">{transaction.name}</td>
-                        <td className="border border-blue-400 px-4 py-2">{transaction.discription}</td>
+                        <td className="border border-blue-400 px-4 py-2">{transaction.description}</td>
                         <td className="border border-blue-400 px-4 py-2">{transaction.date as unknown as string}</td>
                         <td className="border border-blue-400 px-4 py-2">{transaction.category}</td>
                         <td className="border border-blue-400 px-4 py-2">{transaction.payment}</td>
@@ -346,7 +532,31 @@ const Transaction = (props: Props) => {
                           </button>
                         </td>
                         <td className="border border-blue-400 px-4 py-2">
-                          <button onClick={()=>handleDelete(transaction._id)} className='bg-red-500 text-white px-4 py-2 rounded'>
+                          <button onClick={() => handleDelete(transaction._id)} className='bg-red-500 text-white px-4 py-2 rounded'>
+                            Delete
+                          </button>
+                        </td>
+
+                      </tr>
+                    ))}
+                    {flterTransaction.map((transaction, index) => (
+                      <tr className="">
+                        <td className="border border-blue-400 px-4 py-2">{index}</td>
+                        <td className="border border-blue-400 px-4 py-2">{transaction.name}</td>
+                        <td className="border border-blue-400 px-4 py-2">{transaction.description}</td>
+                        <td className="border border-blue-400 px-4 py-2">{transaction.date as unknown as string}</td>
+                        <td className="border border-blue-400 px-4 py-2">{transaction.category}</td>
+                        <td className="border border-blue-400 px-4 py-2">{transaction.payment}</td>
+                        <td className="border border-blue-400 px-4 py-2">{transaction.end_date as unknown as string}</td>
+                        <td className="border border-blue-400 px-4 py-2">{transaction.status}</td>
+                        <td className="border border-blue-400 px-4 py-2">{transaction.mode}</td>
+                        <td className="border border-blue-400 px-4 py-2">
+                          <button className='bg-blue-500 text-white px-4 py-2 rounded'>
+                            Update
+                          </button>
+                        </td>
+                        <td className="border border-blue-400 px-4 py-2">
+                          <button onClick={() => handleDelete(transaction._id)} className='bg-red-500 text-white px-4 py-2 rounded'>
                             Delete
                           </button>
                         </td>
