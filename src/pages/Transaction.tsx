@@ -13,6 +13,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import Datepicker from "react-tailwindcss-datepicker";
+import { useAuth } from '../context/authContext';
 type Props = {};
 
 
@@ -51,6 +52,7 @@ const Transaction = (props: Props) => {
     mode : string
 }
 
+  const {auth} = useAuth()
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [showForm, setShowForm] = useState<boolean>(false);
@@ -58,6 +60,7 @@ const Transaction = (props: Props) => {
   const [transaction, setTransaction] = useState<Transaction[]>([]);
   const [flterTransaction, setFilterTransaction] = useState<Transaction[]>([]);
   const [transactionData, setTransactionData] = useState<{ month: string; payment: number }[]>([]);
+
   const [Open, setOpen] = useState(false);
 
 
@@ -110,6 +113,7 @@ const handleValueChange = (newValue : any )=> {
         setShowForm(false);
         setTransaction([res.data.newTransaction, ...transaction]);
         fetch()
+        // fetchCategory()
         setValue('name',"")
         setValue('category',"")
         setValue('date',new Date())
@@ -138,6 +142,8 @@ const handleValueChange = (newValue : any )=> {
       console.error('Failed to fetch transaction data:', error);
     }
   }
+
+  
   const getallTransaction = () => {
     try {
       axios.get("http://localhost:5000/api/v1/getAllTransaction").then((response) => {
@@ -165,6 +171,7 @@ const handleValueChange = (newValue : any )=> {
       );
       getallTransaction();
       fetch()
+      // fetchCategory()
       toast.success("Product Deleted Successfully");
     } catch (error) {
       console.log(error);

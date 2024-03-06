@@ -6,7 +6,7 @@ interface Props{
   transactionData:{ month: string; payment: number }[],
   fetch:()=>void
 }
-
+  
 const LineChart: React.FC<Props> = ({transactionData,fetch}) => {
      const chartRef = useRef<Chart<"line", unknown> | null>(null);
 

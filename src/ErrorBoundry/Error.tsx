@@ -9,10 +9,9 @@ type Props = {}
 const Error = (props: Props) => {
   return (
     <>
-    <h1>Example</h1>
-    <ErrorBoundary FallBackUI={<FallBackUI/>}>
-        <Buggy/>
-    </ErrorBoundary>
+   
+   <h1>You are not Authenticated!!</h1>
+    
     </>
   )
 }

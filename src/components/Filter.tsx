@@ -33,8 +33,7 @@ export const Filters = [
       payment: 500,
       end_date: "2024-02-10",
       status:"Pending",
-      budget_limit: 1000,
-      actions: "Edit/Delete"
+      mode:"online"
     },
     {
       _id:2,
@@ -45,8 +44,7 @@ export const Filters = [
       payment: 300,
       end_date: "2024-02-08",
       status:"Pending",
-      budget_limit: 800,
-      actions: "Edit/Delete"
+      mode:"online"
     },
     {
       _id:3,
@@ -57,8 +55,7 @@ export const Filters = [
       payment: 200,
       end_date: "2024-02-05",
       status:"Complete",
-      budget_limit: 300,
-      actions: "Edit/Delete"
+      mode:"online"
     },
     {
       _id:4,
@@ -69,8 +66,7 @@ export const Filters = [
       payment: 250,
       end_date: "2024-02-15",
       status:"Pending",
-      budget_limit: 500,
-      actions: "Edit/Delete"
+      mode:"online"
     },
     {
       _id:5,
@@ -81,8 +77,7 @@ export const Filters = [
       payment: 100,
       end_date: "2024-02-03",
       status:"Complete",
-      budget_limit: 200,
-      actions: "Edit/Delete"
+      mode:"online"
     },
     {
       _id:6,
@@ -93,8 +88,7 @@ export const Filters = [
       payment: 150,
       end_date: "2024-02-12",
       status:"Pending",
-      budget_limit: 300,
-      actions: "Edit/Delete"
+      mode:"online"
     },
     {
       _id:7,
@@ -105,8 +99,7 @@ export const Filters = [
       payment: 80,
       end_date: "2024-02-01",
       status:"Pending",
-      budget_limit: 150,
-      actions: "Edit/Delete"
+      mode:"online"
     },
     {
       _id:9,
@@ -117,8 +110,7 @@ export const Filters = [
       payment: 120,
       end_date: "2024-02-07",
       status:"Complete",
-      budget_limit: 200,
-      actions: "Edit/Delete"
+      mode:"online"
     },
     {
       _id:10,
@@ -129,8 +121,7 @@ export const Filters = [
       payment: 80,
       end_date: "2024-02-18",
       status:"Pending",
-      budget_limit: 150,
-      actions: "Edit/Delete"
+      mode:"online"
     },
     {
       _id:11,
@@ -141,8 +132,7 @@ export const Filters = [
       payment: 300,
       end_date: "2024-02-20",
       status:"Complete",
-      budget_limit: 500,
-      actions: "Edit/Delete"
+      mode:"online"
     },
     {
       _id:12,
@@ -153,8 +143,7 @@ export const Filters = [
       payment: 80,
       end_date: "2024-02-18",
       status:"Pending",
-      budget_limit: 150,
-      actions: "Edit/Delete"
+      mode:"online"
     },
     {
       _id:13,
@@ -165,8 +154,7 @@ export const Filters = [
       payment: 80,
       end_date: "2024-02-18",
       status:"Pending",
-      budget_limit: 150,
-      actions: "Edit/Delete"
+      mode:"online"
     },
     {
       _id:14,
@@ -177,8 +165,7 @@ export const Filters = [
       payment: 80,
       end_date: "2024-02-18",
       status:"Pending",
-      budget_limit: 150,
-      actions: "Edit/Delete"
+      mode:"online"
     },
     // Add more entries as needed
   ]

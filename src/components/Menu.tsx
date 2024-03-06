@@ -20,12 +20,12 @@ const Menu = (props: Props) => {
                                     <ul className="flex flex-col py-4">
                                        
                                         <li>
-                                            <a href="#" className="flex flex-row items-center h-12 transform hover:translate-x-2 hover:bg-blue-200 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
+                                            <Link to='/dashboard' className="flex flex-row items-center h-12 transform hover:translate-x-2 hover:bg-blue-200 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
                                                 <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400">
                                                     <RxDashboard />
                                                 </span>
                                                 <span className="text-sm font-medium">Dashboard</span>
-                                            </a>
+                                            </Link>
                                         </li>
                                       
                                         <Link to="/transaction">

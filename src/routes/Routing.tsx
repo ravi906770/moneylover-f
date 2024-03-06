@@ -2,6 +2,8 @@ import React from 'react'
 import { Route , Routes } from 'react-router-dom';
 // import ErrorBoundary from '../ErrorBoundry/ErrorBoundry';
 import Error from '../ErrorBoundry/Error';
+import { useAuth } from '../context/authContext';
+import Dashboard from '../pages/Dashboard';
 const Register = React.lazy(()=>import('../pages/Register')) ;
 const Homepage = React.lazy(()=>import('../pages/Homepage')) ;
 const Login = React.lazy(()=>import('../pages/Login')) ;
@@ -21,6 +23,9 @@ const ContactUs = React.lazy(()=>import('../pages/ContactUs')) ;
 type Props = {}
 
 const Routing = (props: Props) => {
+
+  const {auth} = useAuth();
+
   return (
     <>
     <React.Suspense>
@@ -31,6 +36,7 @@ const Routing = (props: Props) => {
         <Route path='/login' element={<Login/>}/>
         <Route path='/about' element={<About/>}/>
         <Route path='/transaction' element={<Transaction/>}/>
+        <Route path='/dashboard' element={<Dashboard/>}/>
         <Route path='/category' element={<Category/>}/>
         <Route path='/blog' element={<Blog/>}/>
         <Route path='/feedback' element={<Feedback/>}/>
