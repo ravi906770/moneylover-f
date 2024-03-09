@@ -11,58 +11,65 @@ const FakeChart3: React.FC<Props> = () => {
 
         if (ctx && !chartRef.current) {
             const config: ChartConfiguration<'line'> = {
-                type: 'line', // Set the chart type to line
-                data: {
-                    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], // Dummy labels
-                    datasets: [{
-                        label: 'Expense',
-                        data: [100, 200, 300, 400, 500, 600,1000,2000,100,50,100,600], // Dummy data
-                        borderColor: [
-                            'rgb(255, 99, 132)',
-                            'rgb(255, 159, 64)',
-                            'rgb(255, 205, 86)',
-                            'rgb(75, 192, 192)',
-                            'rgb(54, 162, 235)',
-                            'rgb(153, 102, 255)',
-                            'rgb(255, 99, 132)',
-                            'rgb(255, 159, 64)',
-                            'rgb(255, 205, 86)',
-                            'rgb(75, 192, 192)',
-                            'rgb(54, 162, 235)',
-                            'rgb(153, 102, 255)'
-                          ], // Line color
-                        borderWidth: 1,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                    'rgba(255, 205, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                    'rgba(255, 205, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                          ],
-                        // Do not fill the area under the line
-                    }]
+                type: 'line',
+    data: {
+        labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], // Dummy labels for week
+        datasets: [{
+            label: 'Weekly Expense',
+            data: [50, 100, 150, 200, 250, 300, 200], // Dummy data for week
+            borderColor: 'rgb(255, 99, 132)',
+            borderWidth: 1,
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            yAxisID: 'y1' // Assigning to the right y-axis
+        }, {
+            label: 'Monthly Expense',
+            data: [100, 200, 300, 400, 500, 600, 1000, 2000, 100, 50, 100, 600], // Dummy data for month
+            borderColor: 'rgb(75, 192, 192)',
+            borderWidth: 1,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            yAxisID: 'y' // Assigning to the left y-axis
+        }]
+    },
+    options: {
+        responsive: true,
+        interaction: {
+            mode: 'index',
+            intersect: false,
+        },
+        plugins: {
+            title: {
+                display: true,
+                text: 'Chart.js Line Chart - Week vs Month'
+            }
+        },
+        scales: {
+            y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                beginAtZero: true,
+                grid: {
+                    drawOnChartArea: false,
                 },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
+            },
+            y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                grid: {
+                    drawOnChartArea: false,
+                },
+            },
+        }
+    },
             };
 
             chartRef.current = new Chart(ctx, config);
-        } else if (chartRef.current) {
-            chartRef.current.data.datasets[0].data =  [100, 200, 300, 400, 500, 600,1000,2000,100,50,100,600]; // Update with dummy data
-            chartRef.current.data.labels =['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']; // Update with dummy labels
-            chartRef.current.update();
+        }else if (chartRef.current) {
+            chartRef.current.data.datasets[0].data = [50, 100, 150, 200, 250, 300, 200]; // Update weekly expense data
+            chartRef.current.data.datasets[1].data = [100, 200, 300, 400, 500, 600, 1000, 2000, 100, 50, 100, 600]; // Update monthly expense data
+            chartRef.current.data.labels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']; // Update with dummy labels for week
+            chartRef.current.update(); // Update the chart
         }
     }, []);
 

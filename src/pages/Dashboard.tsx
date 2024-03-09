@@ -1,19 +1,97 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Menu from '../components/Menu'
 import bg from "../assets/hero-bg.png"
 import PieChart from '../components/PieChart'
 import Datepicker from 'react-tailwindcss-datepicker'
 import Datatable from '../components/Datatable'
-import FakeChart from '../components/FakeChart'
-import FakeChart2 from '../components/FakeChart2'
-import FakeChart3 from '../components/FakeChart3'
+import axios from 'axios'
+import TransactionForm from '../components/TransactionForm'
+import LineChart from '../components/LineChart'
+// import BarChart from '../components/BarChart'
 
 type Props = {}
+
+type Category = {
+    category: string,
+    totalAmount: number
+  }
+
+type Movie = {
+    _id: string;
+    name : string;
+    description : string;
+    date : string;
+    category : string;
+    payment : number;
+    status: string;
+    mode : string
+};
 
 const Dashboard = (props: Props) => {
 
 
-    // const [count , setCount] = useState(0);
+    const [count , setCount] = useState(0);
+    const [totalAmount , setTotalAmount] = useState(0);
+    const [showForm, setShowForm] = useState<boolean>(false);
+    const [categoryData, setCategoryData] = useState<Category[]>([]);
+    const [transactionData, setTransactionData] = useState<{ month: string; payment: number }[]>([]);
+
+    const fetch = async () => {
+        try {
+          const response = await axios.get('http://localhost:5000/api/v1/transaction-payment');
+          const data = response.data.newTransactionObject;
+          // const sortedData = data.sort((a: { month: string }, b: { month: string }) => {
+          //   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+          //   return months.indexOf(a.month) - months.indexOf(b.month);
+          // });
+          setTransactionData(data);
+        } catch (error) {
+          console.error('Failed to fetch transaction data:', error);
+        }
+      }
+
+
+    const fetchCategory = async () => {
+        try {
+          const response = await axios.get('http://localhost:5000/api/v1/categoryPayment');
+          const data = response.data.formatData;
+          // const sortedData = data.sort((a: { month: string }, b: { month: string }) => {
+          //   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+          //   return months.indexOf(a.month) - months.indexOf(b.month);
+          // });
+          setCategoryData(data);
+        } catch (error) {
+          console.error('Failed to fetch transaction data:', error);
+        }
+      }
+    
+
+    const toggleForm = (): void => {
+        setShowForm(!showForm);
+      };
+
+// fetch all the transaction
+
+
+ const getAllTransaction = async()=>{
+        try {
+            const data = await axios.get("http://localhost:5000/api/v1/getAllTransaction")
+            const transactionData = data.data.getTransaction;
+            const totalCount = transactionData.length
+            setCount(totalCount);
+            setTotalAmount(data.data.totalPayment)
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
+
+    
+
+    useEffect(() => {
+        getAllTransaction();
+    },[count , totalAmount]); 
+
 
 
 
@@ -42,27 +120,27 @@ const Dashboard = (props: Props) => {
                     </div>
                     <div className="grid grid-cols-4 gap-12" >
                         {/* First Line */}
-                        <div className='w-[300px] h-[100px]  border border-solid    flex items-center justify-center'>
+                        <div className='w-[250px] h-[100px]  border border-solid    flex items-center justify-center'>
                             <div className='items-center justify-between text-center'>
-                                <h1 className='text-[25px] text-[#FF6384] font-bold'>₹ 50000</h1>
+                                <h1 className='text-[25px] text-[#FF6384]  font-bold'>₹ 50000</h1>
                                 <h3>Total Income</h3>
                             </div>
                         </div>
-                        <div className='w-[300px] h-[100px] border border-solid   flex items-center justify-center'>
+                        <div className='w-[250px] h-[100px] border border-solid   flex items-center justify-center'>
                             <div className='items-center justify-between text-center'>
-                                <h1 className='text-[25px] text-[#6544f8] font-bold'>₹ 36500</h1>
+                                <h1 className='text-[25px] text-[#6544f8] font-bold'>₹ {totalAmount}</h1>
                                 <h3>Total Expense</h3>
                             </div>
                         </div>
-                        <div className='w-[300px] h-[100px] border border-solid  flex items-center justify-center'>
+                        <div className='w-[250px] h-[100px] border border-solid  flex items-center justify-center'>
                             <div className='items-center justify-between text-center '>
-                                <h1 className='text-[25px] text-[#83b632] font-bold'>₹ 13500</h1>
+                                <h1 className='text-[25px] text-[#83b632] font-bold'>₹ {50000 - totalAmount}</h1>
                                 <h3>Total Balance</h3>
                             </div>
                         </div>
-                        <div className='w-[300px] h-[100px] border border-solid flex items-center justify-center'>
+                        <div className='w-[250px] h-[100px] border border-solid flex items-center justify-center'>
                             <div className='items-center justify-between text-center'>
-                                <h1 className='text-[25px] text-[#ff944d] font-bold'>135</h1>
+                                <h1 className='text-[25px] text-[#ff944d] font-bold'>{count}</h1>
                                 <h3>Total Transactions</h3>
                             </div>
                         </div>
@@ -72,9 +150,14 @@ const Dashboard = (props: Props) => {
                         <div className='col-span-4' >
 
                             {/* Transaction Table */}
-                            <div className='  w-full'>
+                            <div className='  w-full overflow-hidden'>
                                 
                                     <Datatable />
+                                    <button onClick={toggleForm} className="absolute top-[195px] right-0 mr-4 mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Add Transaction
+        </button>
+        { showForm &&  <TransactionForm/>}
+       
                                
                             </div>
                         </div>
@@ -84,11 +167,11 @@ const Dashboard = (props: Props) => {
                             {/* Line Chart */}
                             <div className=' grid grid-cols-2'>
                                 <div className='col-span-1 '>
-                                    <FakeChart />
+                                    <PieChart   categoryData={categoryData} fetchCategory={fetchCategory}/>
                                 </div>
                                 <div className="ml-4 col-span-1">
                                     <div className="w-full">
-                                        <FakeChart2 />
+                                        <LineChart fetch={fetch} transactionData={transactionData}/>
                                     </div>
                                 </div>
                             </div>

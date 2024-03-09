@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import BarChart from '../components/BarChart';
+// import BarChart from '../components/BarChart';
 import PieChart from '../components/PieChart';
 import bg from "../assets/hero-bg.png";
 // import heroImg01 from "../assets/hero-img05.avif";
@@ -24,8 +24,8 @@ type Category = {
 }
 
 type CategoryBudget = {
-  category : string,
-  budget_boundry : number
+  category: string,
+  budget_boundry: number
 }
 
 
@@ -36,11 +36,11 @@ const Category = (props: Props) => {
   const [category, setCategory] = useState<string>('');
   const [budget_boundry, setBudget_Boundry] = useState<string>('');
   const [categoryData, setCategoryData] = useState<Category[]>([]);
-  const [budget , setBudget] = useState<CategoryBudget[]>([]);
+  const [budget, setBudget] = useState<CategoryBudget[]>([]);
 
 
   const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#8A2BE2', '#20B2AA', '#FF7F50', '#32CD32', '#FFD700'];
-  
+
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -60,7 +60,7 @@ const Category = (props: Props) => {
   }
 
 
-  const fetchBudget = async ()=>{
+  const fetchBudget = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/v1/categoryBudget")
       const data = res.data.data
@@ -70,9 +70,9 @@ const Category = (props: Props) => {
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchBudget()
-  },[budget])
+  }, [budget])
 
 
 
@@ -170,7 +170,7 @@ const Category = (props: Props) => {
             </div>
             <div className=" flex flex-col lg:flex-row justify-around mt-4 lg:mt-0">
               <PieChart categoryData={categoryData} fetchCategory={fetchCategory} />
-              <BarChart categoryData={categoryData} fetchCategory={fetchCategory} />
+              {/* <BarChart categoryData={categoryData} fetchCategory={fetchCategory} /> */}
             </div>
 
             <div className="h-96  p-4 overflow-hidden">
@@ -196,26 +196,26 @@ const Category = (props: Props) => {
 
                 <div className='flex flex-wrap justify-evenly '>
                   {
-                    categoryData.map((item , index)=>{
-                      var budgetAmount=0;
+                    categoryData.map((item, index) => {
+                      var budgetAmount = 0;
                       for (let index = 0; index < budget.length; index++) {
                         const element = budget[index];
-                        if (element.category===item.category) {
-                          budgetAmount=element.budget_boundry
+                        if (element.category === item.category) {
+                          budgetAmount = element.budget_boundry
                         }
                       }
-                    return <div key={index} style={{ width: 100, height: 100 }}>
-                    <CircularProgressbar
-                        value={(item.totalAmount / budgetAmount) *100 } // Assuming payment value is provided in the categoryItem object
-                        text={item.category} // Assuming category name is provided in the categoryItem object
-                        styles={buildStyles({
+                      return <div key={index} style={{ width: 100, height: 100 }}>
+                        <CircularProgressbar
+                          value={(item.totalAmount / budgetAmount) * 100} // Assuming payment value is provided in the categoryItem object
+                          text={item.category} // Assuming category name is provided in the categoryItem object
+                          styles={buildStyles({
                             pathColor: colors[index % colors.length], // Apply color based on index
                             textColor: colors[index % colors.length], // Apply text color based on index
                             trailColor: '#d6d6d6', // Customize trail color
                             textSize: '16px', // Customize text size
-                        })}
-                    />
-                </div>
+                          })}
+                        />
+                      </div>
                     })
                   }
                   {/* <div style={{ width: 100, height: 100 }}>
@@ -245,7 +245,7 @@ const Category = (props: Props) => {
                       })}
                     />
                   </div> */}
-{/* 
+                  {/* 
                   <div style={{ width: 100, height: 100 }}>
                     <CircularProgressbar
                       value={80}
@@ -278,7 +278,7 @@ const Category = (props: Props) => {
                 </div>
 
                 <div>
-                {/* <div className='flex mt-10 justify-evenly'>
+                  {/* <div className='flex mt-10 justify-evenly'>
                   <div style={{ width: 100, height: 100 }}>
                     <CircularProgressbar
                       value={56}

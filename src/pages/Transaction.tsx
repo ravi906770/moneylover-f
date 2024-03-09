@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import BarChart from '../components/BarChart';
+// import BarChart from '../components/BarChart';
 import PieChart from '../components/PieChart';
 import bg from "../assets/hero-bg.png";
 // import heroImg01 from "../assets/hero-img05.avif";
@@ -90,6 +90,8 @@ const handleValueChange = (newValue : any )=> {
   const {errors} = formState
 
   const navigate = useNavigate()
+
+  
 
   useEffect(() => {
     try {
