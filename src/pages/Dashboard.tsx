@@ -109,7 +109,7 @@ const Dashboard = (props: Props) => {
 
     return (
         <>
-            <section className='flex items-center w-full min-h-screen bg-no-repeat bg-center bg-cover ' style={{ backgroundImage: `url(${bg})` }} >
+            <section className='flex items-center w-full min-h-screen bg-no-repeat bg-center bg-cover '  >
                 <div className="flex flex-col lg:flex-row h-full">
                     <div className="w-[20px] lg:w-1/4 bg-slack-50 lg:rounded-r-lg p-4 lg:p-10">
                         <div className="mt-4 relative">

@@ -1,9 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Chart, { ChartConfiguration } from 'chart.js/auto';
 
-type Props = {}
-
-const FakeChart3: React.FC<Props> = () => {
+const FakeChart3: React.FC = () => {
     const chartRef = useRef<Chart<"line", unknown> | null>(null);
 
     useEffect(() => {
@@ -12,63 +10,73 @@ const FakeChart3: React.FC<Props> = () => {
         if (ctx && !chartRef.current) {
             const config: ChartConfiguration<'line'> = {
                 type: 'line',
-    data: {
-        labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], // Dummy labels for week
-        datasets: [{
-            label: 'Weekly Expense',
-            data: [50, 100, 150, 200, 250, 300, 200], // Dummy data for week
-            borderColor: 'rgb(255, 99, 132)',
-            borderWidth: 1,
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            yAxisID: 'y1' // Assigning to the right y-axis
-        }, {
-            label: 'Monthly Expense',
-            data: [100, 200, 300, 400, 500, 600, 1000, 2000, 100, 50, 100, 600], // Dummy data for month
-            borderColor: 'rgb(75, 192, 192)',
-            borderWidth: 1,
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            yAxisID: 'y' // Assigning to the left y-axis
-        }]
-    },
-    options: {
-        responsive: true,
-        interaction: {
-            mode: 'index',
-            intersect: false,
-        },
-        plugins: {
-            title: {
-                display: true,
-                text: 'Chart.js Line Chart - Week vs Month'
-            }
-        },
-        scales: {
-            y: {
-                type: 'linear',
-                display: true,
-                position: 'left',
-                beginAtZero: true,
-                grid: {
-                    drawOnChartArea: false,
+                data: {
+                    labels: Array.from({ length: 31 }, (_, i) => (i + 1).toString()), // Labels for the days of March
+                    datasets: [{
+                        label: 'Expense', // Label for the dataset
+                        data: [200, 150, 180, 220, 250, 300, 280, 320, 300, 280, 350, 400, 380, 420, 450, 500, 520, 480, 550, 600, 580, 620, 650, 700, 720, 680, 750, 800, 780, 820, 850], // Dummy expense data for each day of March
+                        borderColor: ['rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(153, 102, 255)',
+                        'rgb(255, 159, 64)',
+                        'rgb(205, 133, 63)',
+                        'rgb(75, 192, 192)',
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(153, 102, 255)',
+                        'rgb(255, 159, 64)',
+                        'rgb(205, 133, 63)',
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(153, 102, 255)',
+                        'rgb(255, 159, 64)',
+                        'rgb(205, 133, 63)',
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(153, 102, 255)',
+                        'rgb(255, 159, 64)',
+                        'rgb(205, 133, 63)',
+                        'rgb(255, 99, 132)'],
+                        borderWidth: 1,
+                        fill: false // Ensure the line chart is not filled
+                    }]
                 },
-            },
-            y1: {
-                type: 'linear',
-                display: true,
-                position: 'right',
-                grid: {
-                    drawOnChartArea: false,
+                options: {
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'March Expense Chart'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            beginAtZero: true,
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        },
+                    }
                 },
-            },
-        }
-    },
             };
 
             chartRef.current = new Chart(ctx, config);
-        }else if (chartRef.current) {
-            chartRef.current.data.datasets[0].data = [50, 100, 150, 200, 250, 300, 200]; // Update weekly expense data
-            chartRef.current.data.datasets[1].data = [100, 200, 300, 400, 500, 600, 1000, 2000, 100, 50, 100, 600]; // Update monthly expense data
-            chartRef.current.data.labels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']; // Update with dummy labels for week
+        } else if (chartRef.current) {
             chartRef.current.update(); // Update the chart
         }
     }, []);

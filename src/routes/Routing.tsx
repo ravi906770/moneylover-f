@@ -18,6 +18,7 @@ const ForgotPassword = React.lazy(()=>import('../pages/ForgotPassword')) ;
 const UseForm = React.lazy(()=>import('../pages/UseForm')) ;
 const YupForm = React.lazy(() => import('../pages/YupForm'));
 const ContactUs = React.lazy(()=>import('../pages/ContactUs')) ;
+const Chat = React.lazy(()=> import('../pages/Chat') )
 
 
 type Props = {}
@@ -42,6 +43,7 @@ const Routing = (props: Props) => {
         <Route path='/feedback' element={<Feedback/>}/>
         <Route path='/contact' element={<ContactUs/>}/>
         <Route path='/account' element={<Account/>}/>
+        <Route path='/chat' element={<Chat/>}/>
         <Route path='/useForm' element={<UseForm/>}/>
         <Route path='/forgot-password' element={<ForgotPassword/>}/>
         <Route path='/form' element={<YupForm/>}/>

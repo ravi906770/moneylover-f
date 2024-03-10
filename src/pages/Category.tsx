@@ -170,6 +170,7 @@ const Category = (props: Props) => {
             </div>
             <div className=" flex flex-col lg:flex-row justify-around mt-4 lg:mt-0">
               <PieChart categoryData={categoryData} fetchCategory={fetchCategory} />
+              
               {/* <BarChart categoryData={categoryData} fetchCategory={fetchCategory} /> */}
             </div>
 
