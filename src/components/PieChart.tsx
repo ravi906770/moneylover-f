@@ -16,8 +16,17 @@ interface Props{
 const PieChart :React.FC<Props> = ({categoryData,fetchCategory}) => {
     const chartRef = useRef<Chart<"pie", number[], unknown> | null>(null);
 
-    const color = ['#FF6384', '#36A2EB', '#FFCE56', '#8A2BE2', '#20B2AA', '#FF7F50', '#32CD32', '#FFD700']
-
+    
+    const colors = [
+      '#FF6384', // Red
+      '#36A2EB', // Blue
+      '#FFCE56', // Yellow
+      '#8A2BE2', // Purple
+      '#20B2AA', // Light Sea Green
+      '#FF7F50', // Coral
+      '#32CD32', // Lime Green
+      '#FFD700'  // Gold
+  ];
     // const fetch = async () => {
     //   try {
     //     const response = await axios.get('http://localhost:5000/api/v1/categoryPayment');
@@ -52,12 +61,14 @@ const PieChart :React.FC<Props> = ({categoryData,fetchCategory}) => {
             label: 'Expense',
             data: categoryData.map(item=>item.totalAmount),
             backgroundColor: [
-              '#FF6384',
-              '#36A2EB',
-              '#FFCE56',
-              '#8A2BE2',
-              '#20B2AA',
-              '#FF7F50'
+              '#FF6384', // Red
+              '#36A2EB', // Blue
+              '#FFCE56', // Yellow
+              '#8A2BE2', // Purple
+              '#20B2AA', // Light Sea Green
+              '#FF7F50', // Coral
+              '#32CD32', // Lime Green
+              '#FFD700'  // Gold
             ]
           }]
         },

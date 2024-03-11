@@ -4,6 +4,9 @@ import { Route , Routes } from 'react-router-dom';
 import Error from '../ErrorBoundry/Error';
 import { useAuth } from '../context/authContext';
 import Dashboard from '../pages/Dashboard';
+import Profile from '../pages/Profile';
+import SplitBill from '../pages/SplitBill';
+import Settings from '../pages/Settings';
 const Register = React.lazy(()=>import('../pages/Register')) ;
 const Homepage = React.lazy(()=>import('../pages/Homepage')) ;
 const Login = React.lazy(()=>import('../pages/Login')) ;
@@ -43,8 +46,10 @@ const Routing = (props: Props) => {
         <Route path='/feedback' element={<Feedback/>}/>
         <Route path='/contact' element={<ContactUs/>}/>
         <Route path='/account' element={<Account/>}/>
+        <Route path='/split' element={<Profile/>}/>
         <Route path='/chat' element={<Chat/>}/>
         <Route path='/useForm' element={<UseForm/>}/>
+        <Route path='/setting' element={<Settings/>}/>
         <Route path='/forgot-password' element={<ForgotPassword/>}/>
         <Route path='/form' element={<YupForm/>}/>
         <Route path='/error' element={<Error/>}/>

@@ -122,7 +122,7 @@ const Header: React.FC = () => {
                                <Link to="/dashboard" className="block text-sm text-gray-800 hover:text-gray-900">Dashboard</Link>
                            </li>
                            <li className="py-2 px-4 hover:bg-gray-100 transition duration-300">
-                               <Link to="/settings" className="block text-sm text-gray-800 hover:text-gray-900">Settings</Link>
+                               <Link to="/setting" className="block text-sm text-gray-800 hover:text-gray-900">Settings</Link>
                            </li>
                        </ul>
                         )}

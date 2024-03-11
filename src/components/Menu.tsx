@@ -9,6 +9,7 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import { AiOutlineLogout } from "react-icons/ai";
 import { MdAccountBalance } from "react-icons/md";
+import { FaAmazonPay } from "react-icons/fa";
 
 const Menu = () => {
     const [activeTab, setActiveTab] = useState('');
@@ -54,11 +55,11 @@ const Menu = () => {
                         </Link>
                     </li>
                     <li>
-                        <Link to="/profile" className={`flex flex-row items-center hover:bg-blue-200  h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-white ${activeTab === 'profile' ? 'bg-blue-200 text-white' : ''}`} onClick={() => handleTabClick('profile')}>
+                        <Link to="/split" className={`flex flex-row items-center hover:bg-blue-200  h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-white ${activeTab === 'profile' ? 'bg-blue-200 text-white' : ''}`} onClick={() => handleTabClick('profile')}>
                             <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400">
-                                <CgProfile />
+                                <FaAmazonPay />
                             </span>
-                            <span className="text-sm font-medium">Profile</span>
+                            <span className="text-sm font-medium">Split Bill</span>
                         </Link>
                     </li>
                     <li>

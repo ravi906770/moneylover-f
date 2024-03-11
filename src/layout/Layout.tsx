@@ -12,8 +12,9 @@ const Layout = (props: Props) => {
     <Header/>
         <main>
             <Routing/>
+            <MyChatBot/>
         </main>
-        <MyChatBot/>
+       
     <Footer/>
     </>
   )

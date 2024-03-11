@@ -70,7 +70,7 @@ const columns = [
 ];
 
 
-const Account = (props: Props) => {
+const SplitBill = (props: Props) => {
 
 
     const colors = [
@@ -177,53 +177,18 @@ const Account = (props: Props) => {
                     </div>
                     <div className="grid grid-cols-3 gap-10 mt-5">
                         {/* First Line */}
-                        <div className='flex gap-10 flex-1 shadow-panelShadow'>
-                            <div className='w-full h-[500px] relative p-2'>
-                                <h1 className='text-center text-[25px]'>Category Expense</h1>
-                                <div className='m-5 p-2 flex flex-col gap-2'>
-                                    {
-                                        categoryData.map((item, index) => {
-                                            var budgetAmount = 0;
-                                            for (let index = 0; index < budget.length; index++) {
-                                                const element = budget[index];
-                                                if (element.category === item.category) {
-                                                    budgetAmount = element.budget_boundry
-                                                }
-                                            }
-                                            return (
-                                                <>
-                                                    <div className="flex items-center relative" key={index}>
-                                                        <CiBookmarkPlus className="text-green-500 mr-2 text-[25px]" onClick={handleIconClick} />
-                                                        <h1>{item.category}</h1>
-                                                        <div className='absolute right-0  rounded'>
-                                                            <h4 className='text-[10px] '>Your Limit :{budgetAmount}</h4>
-                                                            <h4 className='text-[10px]'>Total Usage: {((item.totalAmount / budgetAmount) * 100).toFixed(2)}%</h4>
-                                                        </div>
-
-                                                    </div>
-
-                                                    <Line percent={(item.totalAmount / budgetAmount) * 100} strokeWidth={3} strokeColor={colors[index % colors.length]} />
-                                                    {showForm && (
-                                                        <div className="bg-gray-100 p-4 absolute rounded mt-4">
-                                                            {/* Form for adding budget limit */}
-                                                            {/* Add your form elements here */}
-                                                            <IoCloseCircleOutline className='absolute right-0 top-0 text-[25px]' onClick={handleClose} />
-                                                            <label className='m-1'>Enter Your Budget Limit</label>
-                                                            <input type="number" placeholder="Enter budget limit" className="w-full border  rounded px-2 py-1 mt-2" />
-                                                            <button className="bg-blue-500 text-white px-4 py-1 rounded mt-2">Submit</button>
-                                                        </div>
-                                                    )}
-                                                </>
-                                            )
-                                        })
-                                    }
+                        <div className='flex gap-10 flex-1'>
+                            <div className='w-full h-[500px] relative'>
+                                <h1 className='text-start text-[25px]'>Split Bill</h1>
+                                <div className='m-5 p-2 flex gap-2'>
+                                          
                                 </div>
                             </div>
                         </div>
 
-                        <div className='flex gap-10 flex-1 shadow-panelShadow'>
-                            <div className='w-full h-[500px] p-2'>
-                                <h1 className='text-center text-[25px]'>Balance Review</h1>
+                        <div className='flex gap-10 flex-1'>
+                            <div className='w-full h-[500px]'>
+                                <h1 className='text-start text-[25px]'>Balance Review</h1>
                                 <div className='mt-4 text-black border border-primaryColor rounded'>
                                     <Datepicker value={null} onChange={function (value: DateValueType, e?: HTMLInputElement | null | undefined): void {
                                         throw new Error('Function not implemented.')
@@ -258,9 +223,9 @@ const Account = (props: Props) => {
 
                             </div>
                         </div>
-                        <div className='flex gap-10 flex-1 shadow-panelShadow '>
-                            <div className='w-full max-w-[600px] h-auto p-2 ' >
-                                <h1 className='text-center text-[25px]'>Bank Details</h1>
+                        <div className='flex gap-10 flex-1'>
+                            <div className='w-full max-w-[600px] h-auto'>
+                                <h1 className='text-start text-[25px]'>Bank Details</h1>
                                 <div>
                                     <img src={atm} alt="" className='w-full h-[250px]' />
                                 </div>
@@ -300,10 +265,10 @@ const Account = (props: Props) => {
                         {/* Second Line */}
                         <div className='col-span-3'>
                             <div className='grid grid-cols-3 gap-5'>
-                                <div className='col-span-1 w-full border border-solid relative bg-white shadow-panelShadow'>
-                                    <div className='flex h-[60px] p-2'>
+                                <div className='col-span-1 w-full border border-solid relative'>
+                                    <div className='flex h-[50px] p-1'>
                                         <h1 className='text-start text-[25px] '>My Dues</h1>
-                                        <button onClick={toggleForm} className='ml-auto bg-blue-500 mt-1 mr-2 hover:bg-green-300 text-white font-bold py-2 px-4 rounded h-[20px]]'>
+                                        <button onClick={toggleForm} className='ml-auto bg-blue-500 mt-1 mr-2 hover:bg-green-300 text-white font-bold py-2 px-4 rounded'>
                                             Add Dues
                                         </button>
                                     </div>
@@ -336,17 +301,14 @@ const Account = (props: Props) => {
                                             </form>
                                         </div>
                                     )}
-                                    <div className='mt-2'>
                                     <DataTable
                                     pagination
                                     columns={columns}
                                     data={dues}
-                                    /> 
-                                    </div>
-                                    {/* Render your Duetable component here */}
+                                    /> {/* Render your Duetable component here */}
                                 </div>
-                                <div className=" col-span-2 w-full border border-solid relative shadow-panelShadow bg-white">
-                                    <div className="w-full p-2">
+                                <div className=" col-span-2 w-full border border-solid relative">
+                                    <div className="w-full p-1">
                                         <h1 className='text-start text-[25px]'>Daily Review</h1>
                                         <FakeChart3 />
                                     </div>
@@ -402,4 +364,4 @@ const Account = (props: Props) => {
     )
 }
 
-export default Account
+export default SplitBill
