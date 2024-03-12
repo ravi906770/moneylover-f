@@ -220,7 +220,6 @@ const Account = (props: Props) => {
                                 </div>
                             </div>
                         </div>
-
                         <div className='flex gap-10 flex-1 shadow-panelShadow'>
                             <div className='w-full h-[500px] p-2'>
                                 <h1 className='text-center text-[25px]'>Balance Review</h1>
