@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import registerImg from "../assets/register.avif"
 import bg from "../assets/hero-bg.png"
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 import axios from "axios"
 import { Link, useNavigate } from "react-router-dom"
 import { FaGoogle } from "react-icons/fa6";
@@ -59,8 +59,10 @@ const Register = (props: Props) => {
         // console.log(res)
         if (res && res.data.success){
           Navigate("/login")
+          toast.success("Registered Successfully!!")
         }
       } catch (error) {
+        toast.error("Something Went Wrong!!")
         console.log(error);
       }
   }

@@ -21,6 +21,8 @@ import axios from 'axios'
 import { useForm } from 'react-hook-form'
 import DataTable from 'react-data-table-component'
 import { FaAmazonPay } from "react-icons/fa";
+import useAxiosPrivate from '../axios/axiosPrivate'
+import toast from 'react-hot-toast'
 
 type Props = {}
 type ValuePiece = Date | null;
@@ -72,6 +74,8 @@ const columns = [
 
 const SplitBill = (props: Props) => {
 
+    const axiosPrivate = useAxiosPrivate()
+
 
     const colors = [
         '#FF6384', // Red
@@ -102,10 +106,11 @@ const SplitBill = (props: Props) => {
     const onSubmit =async(data : formValue)=>{
         // e.preventDefault();
       try {
-        const res = await axios.post("http://localhost:5000/api/v1/addDues" , data)
+        const res = await axiosPrivate.post("/addDues" , data)
         if (res && res.data.success) {
             handleClose();
-            console.log(res)
+            toast.success("Dues Added Successfully!!")
+            // console.log(res)
           }
       } catch (error) {
         console.log(error)
@@ -114,7 +119,7 @@ const SplitBill = (props: Props) => {
 
     const getDues =async()=>{
         try {
-          const res = await axios.get("http://localhost:5000/api/v1/getDues")
+          const res = await axiosPrivate.get("/getDues")
           if (res && res.data.success) {
              setDues(res.data.data)
             }
@@ -126,7 +131,7 @@ const SplitBill = (props: Props) => {
 
     const fetchCategory = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/v1/categoryPayment');
+            const response = await axiosPrivate.get('/categoryPayment');
             const data = response.data.formatData;
             setCategoryData(data);
         } catch (error) {
@@ -137,7 +142,7 @@ const SplitBill = (props: Props) => {
 
     const fetchBudget = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/api/v1/categoryBudget")
+            const res = await axiosPrivate.get("/categoryBudget")
             const data = res.data.data
             setBudget(data);
         } catch (error) {

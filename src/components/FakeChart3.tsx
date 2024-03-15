@@ -82,7 +82,7 @@ const FakeChart3: React.FC = () => {
     }, []);
 
     return (
-        <div className="h-120 w-250">
+        <div className="sm:h-120 sm:w-250 w-full h-full">
             <canvas id="Chart3"></canvas>
         </div>
     );

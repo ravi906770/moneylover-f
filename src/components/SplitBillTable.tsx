@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
+import useAxiosPrivate from '../axios/axiosPrivate';
+// import useAxiosPrivate from '../axios/axiosPrivate';
 
 type Props = {
 }
@@ -48,12 +50,13 @@ const columns = [
 
 const SplitBillTable = (props: Props) => {
 
+    const axiosPrivate = useAxiosPrivate();
 
     const [data , setData] = useState<formValue[]>([]);
 
     const getAllSplitBill = async()=>{
         try {
-            const res = await axios.get("http://localhost:5000/api/v1/getsplitbill")
+            const res = await axiosPrivate.get("/getsplitbill")
             console.log("reach")
             if(res && res.data.success){
                 console.log(res.data.data)

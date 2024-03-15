@@ -68,13 +68,13 @@ const LineChart: React.FC<Props> = ({transactionData,fetch}) => {
       chartRef.current = new Chart(ctx, config);
     } else if (chartRef.current) {
       chartRef.current.data.labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-      chartRef.current.data.datasets[0].data = transactionData.map(item => item.payment);
+      chartRef.current.data.datasets[0].data = transactionData?.map(item => item.payment);
       chartRef.current.update();
     }
   }, [transactionData]);
 
   return (
-    <div className="h-96 w-190">
+    <div className="h-96 w-full ">
       <canvas id="LineChart"></canvas>
     </div>
   );

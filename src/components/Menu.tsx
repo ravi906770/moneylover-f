@@ -10,9 +10,12 @@ import { FaRegQuestionCircle } from "react-icons/fa";
 import { AiOutlineLogout } from "react-icons/ai";
 import { MdAccountBalance } from "react-icons/md";
 import { FaAmazonPay } from "react-icons/fa";
+import { useAuth } from '../context/authContext';
 
 const Menu = () => {
     const [activeTab, setActiveTab] = useState('');
+
+    const {logout} = useAuth()
 
     const handleTabClick = (tabName : string) => {
         setActiveTab(tabName);
@@ -92,7 +95,7 @@ const Menu = () => {
                             <span className="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-400">
                                 <AiOutlineLogout />
                             </span>
-                            <span className="text-sm font-medium">Logout</span>
+                            <span className="text-sm font-medium" onClick={()=>logout()}>Logout</span>
                         </Link>
                     </li>
                 </ul>

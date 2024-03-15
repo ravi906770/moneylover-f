@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import heroImg01 from "../assets/hero-img05.avif"
 // import heroImg02 from "../assets/hero-img02.png"
 // import heroImg03 from "../assets/hero-img03.png"

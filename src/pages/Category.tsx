@@ -14,7 +14,8 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import Menu from '../components/Menu';
 import axios from 'axios';
-import toast from 'react-hot-toast';
+import toast, { ToastBar } from 'react-hot-toast';
+import useAxiosPrivate from '../axios/axiosPrivate';
 
 type Props = {};
 
@@ -44,16 +45,20 @@ const Category = (props: Props) => {
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const axiosPrivate = useAxiosPrivate()
+
 
   const fetchCategory = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/v1/categoryPayment');
+      const response = await axiosPrivate.get('/categoryPayment');
       const data = response.data.formatData;
       // const sortedData = data.sort((a: { month: string }, b: { month: string }) => {
       //   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
       //   return months.indexOf(a.month) - months.indexOf(b.month);
       // });
       setCategoryData(data);
+      // console.log(categoryData);
+      
     } catch (error) {
       console.error('Failed to fetch transaction data:', error);
     }
@@ -62,7 +67,7 @@ const Category = (props: Props) => {
 
   const fetchBudget = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/v1/categoryBudget")
+      const res = await axiosPrivate.get("/categoryBudget")
       const data = res.data.data
       setBudget(data);
     } catch (error) {
@@ -72,6 +77,7 @@ const Category = (props: Props) => {
 
   useEffect(() => {
     fetchBudget()
+  // fetchCategory() 
   }, [budget])
 
 
@@ -80,9 +86,10 @@ const Category = (props: Props) => {
 
     e.preventDefault();
     try {
-      const res = await axios.post(`/api/v1/category`, { category, budget_boundry })
+      const res = await axiosPrivate.post(`/category`, { category, budget_boundry })
       if (res && res.data.success) {
-        console.log(res)
+        toast.success("Category Added Successfully!!")
+        // console.log(res)
       }
       else {
         toast.error(res && res.data.message)
@@ -197,7 +204,7 @@ const Category = (props: Props) => {
 
                 <div className='flex flex-wrap justify-evenly '>
                   {
-                    categoryData.map((item, index) => {
+                    categoryData?.map((item, index) => {
                       var budgetAmount = 0;
                       for (let index = 0; index < budget.length; index++) {
                         const element = budget[index];

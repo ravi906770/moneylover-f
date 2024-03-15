@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import Datepicker from "react-tailwindcss-datepicker";
 import { useAuth } from '../context/authContext';
+import useAxiosPrivate from '../axios/axiosPrivate';
 type Props = {};
 
 
@@ -91,11 +92,11 @@ const handleValueChange = (newValue : any )=> {
 
   const navigate = useNavigate()
 
-  
+  const axiosPrivate = useAxiosPrivate()
 
   useEffect(() => {
     try {
-      axios.get("http://localhost:5000/api/v1/getCategory").then((response) => {
+      axiosPrivate.get("/getCategory").then((response) => {
         console.log(response.data.getCategory);
         setCategories(response.data.getCategory)
 
@@ -110,7 +111,7 @@ const handleValueChange = (newValue : any )=> {
 
   const onSubmit = async ( data : formValue) => {
     try {
-      const res = await axios.post(`http://localhost:5000/api/v1/transaction`,data )
+      const res = await axiosPrivate.post(`/transaction`,data )
       if (res && res.data.success) {
         setShowForm(false);
         setTransaction([res.data.newTransaction, ...transaction]);
@@ -133,7 +134,7 @@ const handleValueChange = (newValue : any )=> {
   }
   const fetch = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/v1/transaction-payment');
+      const response = await axiosPrivate.get('/transaction-payment');
       const data = response.data.newTransactionObject;
       // const sortedData = data.sort((a: { month: string }, b: { month: string }) => {
       //   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -148,7 +149,7 @@ const handleValueChange = (newValue : any )=> {
   
   const getallTransaction = () => {
     try {
-      axios.get("http://localhost:5000/api/v1/getAllTransaction").then((response) => {
+      axiosPrivate.get("/getAllTransaction").then((response) => {
         // console.log(response.data.getTransaction);
         setTransaction(response.data.getTransaction)
 
@@ -161,6 +162,7 @@ const handleValueChange = (newValue : any )=> {
 
   useEffect(() => {
     getallTransaction();
+    fetch()
   }, [])
 
 
@@ -168,8 +170,8 @@ const handleValueChange = (newValue : any )=> {
     try {
       let answer = window.prompt("Are You Sure want to delete this transaction ? ");
       if (!answer) return;
-      const { data } = await axios.delete(
-        `http://localhost:5000/api/v1/delete-transaction/${id}`
+      const { data } = await axiosPrivate.delete(
+        `/delete-transaction/${id}`
       );
       getallTransaction();
       fetch()
@@ -201,7 +203,7 @@ const handleValueChange = (newValue : any )=> {
 
   const handleFilterhigh = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/v1/high-transaction")
+      const res = await axiosPrivate.get("/high-transaction")
       setFilterTransaction(res.data.sorted)
       // console.log(data);
     } catch (error) {

@@ -1,26 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import Menu from '../components/Menu'
-import bg from "../assets/hero-bg.png"
-import { CircularProgressbar, buildStyles } from 'react-circular-progressbar'
-import Datatable from '../components/Datatable'
 import { Circle, Line } from 'rc-progress';
 import atm from "../assets/bank3.jpg"
-import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import Datepicker, { DateValueType } from 'react-tailwindcss-datepicker'
-import { CiBookmarkPlus } from "react-icons/ci";
+import { CiBookmarkPlus} from "react-icons/ci";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { AiFillBank } from "react-icons/ai";
 import mastercard from "../assets/mastercard.svg"
 import { CiCircleChevDown } from "react-icons/ci";
 import { LuSend } from "react-icons/lu";
-import Duetable from '../components/DueTable'
-import AddDueForm from '../components/AddDueForm'
 import FakeChart3 from '../components/FakeChart3'
 import axios from 'axios'
 import { useForm } from 'react-hook-form'
 import DataTable from 'react-data-table-component'
 import { FaAmazonPay } from "react-icons/fa";
+import { CiMenuBurger } from "react-icons/ci";
+import { IoIosCloseCircle } from "react-icons/io";
+import useAxiosPrivate from '../axios/axiosPrivate';
+import toast from 'react-hot-toast';
+
 
 type Props = {}
 type ValuePiece = Date | null;
@@ -43,34 +41,36 @@ type CategoryBudget = {
     budget_boundry: number
 }
 const columns = [
-	{
-		name: 'Title',
-		selector: (row : any) => row.name,
-	},
-	{
-		name: 'End-Date',
-		selector: (row : any) => row.date,
-	},
     {
-		name: 'Payment',
-		selector: (row : any) => row.payment,
-	},
+        name: 'Title',
+        selector: (row: any) => row.name,
+    },
     {
-        name : "Actions",
+        name: 'End-Date',
+        selector: (row: any) => row.date,
+    },
+    {
+        name: 'Payment',
+        selector: (row: any) => row.payment,
+    },
+    {
+        name: "Actions",
         cell: (row: any) => (
             <div className=" flex">
-            {/* <button className="px-2 py-2  text-white rounded whitespace-nowrap" >
+                {/* <button className="px-2 py-2  text-white rounded whitespace-nowrap" >
                     <MdOutlinePreview className='text-green-500 text-[25px]' onClick={() => handleExpandRow(row)}/>
                 </button> */}
-                <button className=""><FaAmazonPay  className='text-green-500 text-[30px]'/></button>
+                <button className=""><FaAmazonPay className='text-green-500 text-[30px]' /></button>
             </div>
-        ),   
-        button: true    
+        ),
+        button: true
     }
 ];
 
 
 const Account = (props: Props) => {
+
+    const axiosPrivate = useAxiosPrivate()
 
 
     const colors = [
@@ -88,7 +88,14 @@ const Account = (props: Props) => {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [categoryData, setCategoryData] = useState<Category[]>([]);
     const [budget, setBudget] = useState<CategoryBudget[]>([]);
-    const [dues , setDues] = useState<formValue[]>([]);
+    const [dues, setDues] = useState<formValue[]>([]);
+    const [showMenu, setShowMenu] = useState<boolean>(false);
+    const [totalAmount, setTotalAmount] = useState(0);
+    const [transactionData, setTransactionData] = useState<{ month: string; payment: number }[]>([]);
+    const [selectedDate, setSelectedDate] = useState<string>('');
+    const [dailyPaymentData, setDailyPaymentData] = useState<{ date: string; payment: number }[]>([]);
+    const [selectedMonth, setSelectedMonth] = useState("")
+
 
 
 
@@ -99,34 +106,35 @@ const Account = (props: Props) => {
     const { errors } = formState
 
 
-    const onSubmit =async(data : formValue)=>{
+    const onSubmit = async (data: formValue) => {
         // e.preventDefault();
-      try {
-        const res = await axios.post("http://localhost:5000/api/v1/addDues" , data)
-        if (res && res.data.success) {
-            handleClose();
-            console.log(res)
-          }
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
-    const getDues =async()=>{
         try {
-          const res = await axios.get("http://localhost:5000/api/v1/getDues")
-          if (res && res.data.success) {
-             setDues(res.data.data)
+            const res = await axiosPrivate.post("/addDues", data)
+            if (res && res.data.success) {
+                toast.success("Dues added Successfully!!")
+                handleClose();
+                console.log(res)
             }
         } catch (error) {
-          console.log(error)
+            console.log(error)
         }
-      }
+    }
+
+    const getDues = async () => {
+        try {
+            const res = await axiosPrivate.get("/getDues")
+            if (res && res.data.success) {
+                setDues(res.data.data)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
 
     const fetchCategory = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/v1/categoryPayment');
+            const response = await axiosPrivate.get('/categoryPayment');
             const data = response.data.formatData;
             setCategoryData(data);
         } catch (error) {
@@ -137,7 +145,7 @@ const Account = (props: Props) => {
 
     const fetchBudget = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/api/v1/categoryBudget")
+            const res = await axiosPrivate.get("/categoryBudget")
             const data = res.data.data
             setBudget(data);
         } catch (error) {
@@ -145,10 +153,76 @@ const Account = (props: Props) => {
         }
     }
 
+
+    const getAllTransaction = async () => {
+        try {
+            const data = await axiosPrivate.get("/getAllTransaction")
+            setTotalAmount(data.data.totalPayment)
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+    const fetch = async () => {
+        try {
+            const response = await axiosPrivate.get('/transaction-payment');
+            const data = response.data.newTransactionObject;
+            // const sortedData = data.sort((a: { month: string }, b: { month: string }) => {
+            //   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            //   return months.indexOf(a.month) - months.indexOf(b.month);
+            // });
+            setTransactionData(data);
+        } catch (error) {
+            console.error('Failed to fetch transaction data:', error);
+        }
+    }
+
+    const handleMonthSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedMonth(event.target.value);
+    }
+
+
+
+    const handleDateSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedDate = event.target.value;
+        const parts = selectedDate.split("-");
+        const reversedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+        setSelectedDate(reversedDate);
+
+        try {
+            const response = await axiosPrivate.get(`/dailydata`);
+                // console.log(response);
+                
+            if (response.data.success) {
+                setDailyPaymentData(response.data.dailyPaymentData);
+            } else {
+                console.error('Failed to fetch daily payment data:', response.data.message);
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };;
+
+
+    // filter for the getting the daily payment based on the selected month
+    const filterData = selectedMonth ? transactionData.filter(item => parseInt(item.month) === parseInt(selectedMonth)) : transactionData
+
+
+    // filter for the getting the daily payment based on the selected date
+    const filterDailyData =  dailyPaymentData?.filter(item => item.date === selectedDate) 
+   
+    // console.log(filterDailyData);
+    
+
+
     useEffect(() => {
         fetchBudget()
         fetchCategory()
         getDues()
+        getAllTransaction()
+        fetch()
+        // dailyPayment()
     }, [])
 
     const toggleForm = () => {
@@ -164,21 +238,34 @@ const Account = (props: Props) => {
         setIsFormOpen(!isFormOpen)
     }
 
+    const toggleMenu = () => {
+        setShowMenu(!showMenu);
+    };
+
+    // const amount = filterData[0].payment;
+
     const [value, onChange] = useState<Value>(new Date());
     const [startDate, setStartDate] = useState(new Date());
     return (
         <>
             <section className='flex items-center w-full min-h-screen bg-no-repeat bg-center bg-cover' >
                 <div className="flex flex-col lg:flex-row h-full">
-                    <div className="w-[20px] lg:w-1/4 bg-slack-50 lg:rounded-r-lg p-4 lg:p-10">
-                        <div className="mt-4 relative cursor-pointer">
-                            <Menu />
+                    <div className='sm:w-full lg:w-1/5 w-3/4 bg-slack-50 lg:rounded-r-lg p-4 lg:p-10'>
+                            <div className='mt-4 relative cursor-pointer'>
+                                <button className='lg:hidden absolute top-0 right-4 text-xl focus:outline-none' onClick={toggleMenu}>
+                                    {showMenu ? <CiMenuBurger /> : <IoIosCloseCircle />}
+                                </button>
+                                <div className=''>
+                                    {!showMenu && <Menu />}
+                                </div>
+
+                            </div>
                         </div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-10 mt-5">
+
+                    <div className="sm:grid sm:grid-cols-3 gap-10 mt-5 flex flex-col">
                         {/* First Line */}
                         <div className='flex gap-10 flex-1 shadow-panelShadow'>
-                            <div className='w-full h-[500px] relative p-2'>
+                            <div className='sm:w-full w-3/4 h-[500px] relative p-2'>
                                 <h1 className='text-center text-[25px]'>Category Expense</h1>
                                 <div className='m-5 p-2 flex flex-col gap-2'>
                                     {
@@ -201,8 +288,8 @@ const Account = (props: Props) => {
                                                         </div>
 
                                                     </div>
-
-                                                    <Line percent={(item.totalAmount / budgetAmount) * 100} strokeWidth={3} strokeColor={colors[index % colors.length]} />
+                                                    {/* strokeColor={((filterData[0]?.payment) / 50000) * 100 > 90 ? "#e53935" : "#4CAF50"}  */}
+                                                    <Line percent={(item.totalAmount / budgetAmount) * 100} strokeWidth={3}  strokeColor={((item.totalAmount / budgetAmount) * 100) > 90 ? "#e53935" : colors[index % colors.length]} />
                                                     {showForm && (
                                                         <div className="bg-gray-100 p-4 absolute rounded mt-4">
                                                             {/* Form for adding budget limit */}
@@ -221,44 +308,103 @@ const Account = (props: Props) => {
                             </div>
                         </div>
                         <div className='flex gap-10 flex-1 shadow-panelShadow'>
-                            <div className='w-full h-[500px] p-2'>
+                            <div className='sm:w-full w-3/4 sm:h-[500px] h-[550px] p-2'>
                                 <h1 className='text-center text-[25px]'>Balance Review</h1>
-                                <div className='mt-4 text-black border border-primaryColor rounded'>
-                                    <Datepicker value={null} onChange={function (value: DateValueType, e?: HTMLInputElement | null | undefined): void {
-                                        throw new Error('Function not implemented.')
-                                    }} />
-                                </div>
-                                <div className='flex gap-6'>
-                                    <div className="relative inline-block mt-4">
-                                        <h4>Weekly Review</h4>
-                                        <Circle percent={20} strokeWidth={5} strokeColor="#28a745" className='w-[125px]' />
-                                        <span className="absolute inset-0 flex items-center justify-center">Total Usage</span>
-                                    </div>
-                                    <div className="relative inline-block mt-4">
-                                        <h4>Monthly Review</h4>
-                                        <Circle percent={10} strokeWidth={5} strokeColor="#e83e8c" className='w-[125px]' />
-                                        <span className="absolute inset-0 flex items-center justify-center ">Total Usage</span>
-                                    </div>
-                                </div>
                                 <div className='flex flex-col gap-6'>
-                                    <div className="relative inline-block mt-4">
-                                        <h4>Daily Budget Limit</h4>
-                                        <Line percent={30} strokeWidth={3} strokeColor="#4CAF50" />
+                                    <div className='mt-4   flex  rounded gap-4'>
+                                        <div className='bg-white text-textColor text-[15px]'>
+                                            <label>Select Date</label>
+                                            <input onChange={handleDateSelect} type="date" className='border border-solid border-primaryColor p-2 w-full h-[25px]' />
+                                        </div>
                                     </div>
-                                    <div className="relative inline-block mt-4">
+                                    <div className='flex sm:gap-4 relative gap-10'>
+                                        <div className="relative inline-block ">
+                                            <h4>Daily Budget Limit</h4>
+                                            <Circle percent={((filterDailyData[0]?.payment)/1700)*100} strokeWidth={3}  strokeColor={((filterDailyData[0]?.payment) / 1700) * 100 > 90 ? "#e53935" : "#4CAF50"} className='w-[125px]' />
+                                            <span className="absolute inset-0 flex items-center justify-center text-[11px]">Total Usage : {(filterDailyData[0]?.payment)}</span>
+                                        </div>
+                                        <div className=' sm:absolute right-0 flex flex-col justify-end'>
+                                            <div>
+                                                <p className='text-textColor text-[15px]'>Budget Limit:</p>
+                                                <p className='text-primaryColor font-bold '>1700</p>
+                                            </div>
+                                            <div>
+                                                <p className='text-textColor text-[15px]'>Total Usage:</p>
+                                                <p className='text-green-500 font-bold '>{(filterDailyData[0]?.payment)}</p>
+                                            </div>
+                                            <div>
+                                                <p className='text-textColor text-[15px]'>Remaining Balance:</p>
+                                                <p className='text-red-500 font-bold '>{1700 - (filterDailyData[0]?.payment|| 0)}</p>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    {/* <div className="relative inline-block mt-4">
                                         <h4>Weekly Budget Limit</h4>
                                         <Line percent={20} strokeWidth={3} strokeColor="#F9A825" />
-                                    </div>
-                                    <div className="relative inline-block mt-4">
+                                    </div> */}
+                                    {/* <div className="relative inline-block">
+                                        <div className=' absolute right-0   '>
+                                            <h4 className='text-[10px] '>Your Limit :50000</h4>
+                                            <h4 className='text-[10px]'>Total Usage: {((totalAmount / 50000) * 100).toFixed(2)}%</h4>
+                                        </div>
                                         <h4>Monthly Budget Limit</h4>
-                                        <Line percent={10} strokeWidth={3} strokeColor="#3A86FF" />
+                                        <Circle percent={((totalAmount / 50000) * 100)} strokeWidth={3} strokeColor="#3A86FF" className='w-[125px]'/>
+                                    </div> */}
+                                </div>
+
+                                <div className='flex gap-4'>
+
+                                    <div className="relative inline-block mt-4">
+                                        <h4>Monthly Review</h4>
+                                        <Circle percent={((filterData[0]?.payment / 50000) * 100)} strokeWidth={5} strokeColor={((filterData[0]?.payment) / 50000) * 100 > 90 ? "#e53935" : "#4CAF50"} className='w-[125px]' />
+                                        <span className="absolute inset-0 flex items-center justify-center text-[11px]">Total Usage : {filterData[0]?.payment}</span>
+                                    </div>
+                                    
+
+                                    <div className='mt-9 '>
+                                        <div>
+                                            <p className='text-textColor text-[15px]'>Budget Limit:</p>
+                                            <p className='text-primaryColor font-bold '>50000</p>
+                                        </div>
+                                        <div>
+                                            <p className='text-textColor text-[15px]'>Total Usage:</p>
+                                            <p className='text-green-500 font-bold '>{filterData[0]?.payment}</p>
+                                        </div>
+                                        <div>
+                                            <p className='text-textColor text-[15px]'>Remaining Balance:</p>
+                                            <p className='text-red-500 font-bold '>{50000 - (filterData[0]?.payment || 0)}</p>
+                                        </div>
+
+                                    </div>
+                                    <div className="relative inline-block mt-4 ">
+                                        <h4>Month</h4>
+                                        <div className='border border-solid w-[25px]'>
+                                            <select name="monthSelect" value={selectedMonth} className='bg-white text-textColor border border-solid font-semibold rounded h-8' onChange={handleMonthSelect}>
+                                                <option value="1">Jan</option>
+                                                <option value="2">Feb</option>
+                                                <option value="3">Mar</option>
+                                                <option value="4">Apr</option>
+                                                <option value="5">May</option>
+                                                <option value="6">Jun</option>
+                                                <option value="7">Jul</option>
+                                                <option value="8">Aug</option>
+                                                <option value="9">Sep</option>
+                                                <option value="10">Oct</option>
+                                                <option value="11">Nov</option>
+                                                <option value="12">Dec</option>
+                                            </select>
+                                        </div>
+
                                     </div>
                                 </div>
+
 
                             </div>
                         </div>
                         <div className='flex gap-10 flex-1 shadow-panelShadow '>
-                            <div className='w-full max-w-[600px] h-auto p-2 ' >
+                            <div className='sm:w-full w-3/4 sm:h-[500px] h-[550px] p-2 ' >
                                 <h1 className='text-center text-[25px]'>Bank Details</h1>
                                 <div>
                                     <img src={atm} alt="" className='w-full h-[250px]' />
@@ -268,7 +414,7 @@ const Account = (props: Props) => {
                                         <AiFillBank className='text-[25px]' />
                                         <h2 className="text-lg font-semibold text-textColor">State Bank of India</h2>
                                     </div>
-                                    <p className='text-[15px] text-textColor'>Account Holder Name: <span className='text-primaryColor font-semibold'>Ravi Pankhaniya</span></p>
+                                    <p className='sm:text-[15px] text-[12px] text-textColor'>Account Holder Name: <span className='text-primaryColor font-semibold'>Ravi Pankhaniya</span></p>
                                     <div className='h-[50px] border border-solid border-primaryColor flex rounded-full'>
                                         <div className='border border-left border-primaryColor w-[80px] rounded-full'>
                                             <figure>
@@ -277,14 +423,14 @@ const Account = (props: Props) => {
                                         </div>
                                         <div className='flex flex-col justify-center items-center ml-[5px]'>
                                             <h5 className='text-textColor text-[12px] '>Card Number</h5>
-                                            <h1 className='text-headingColor text-[15px]'>1234  5678  9101  1121</h1>
+                                            <h1 className='text-headingColor sm:text-[15px] text-[8px]'>1234  5678  9101  1121</h1>
                                         </div>
-                                        <div className='flex justify-end right-0 w-[90px] mt-3 text-[25px]'>
+                                        <div className='flex justify-end sm:right-0 mr-2 w-[90px] mt-3 text-[25px]'>
                                             <CiCircleChevDown className='text-primaryColor' />
                                         </div>
                                     </div>
                                     <div className='h-[40px] border boder-solid mt-2 flex rounded-full border-primaryColor '>
-                                        <div className='border rounded-full w-[250px]'>
+                                        <div className='border rounded-full sm:w-[250px] w-[200px]'>
                                             <input type="number" placeholder="Quick Transfer" className='border text-headingColor hover:bg-none justify-center rounded-full h-full w-[250px]  text-center' />
                                         </div>
                                         <div className='border border-left w-[2px] rounded-full'></div>
@@ -298,8 +444,8 @@ const Account = (props: Props) => {
 
                         {/* Second Line */}
                         <div className='col-span-3'>
-                            <div className='grid grid-cols-3 gap-5'>
-                                <div className='col-span-1 w-full border border-solid relative bg-white shadow-panelShadow'>
+                            <div className='sm:grid sm:grid-cols-3 gap-5 flex flex-col'>
+                                <div className='col-span-1 sm:w-full w-[375px]  border border-solid relative bg-white shadow-panelShadow'>
                                     <div className='flex h-[60px] p-2'>
                                         <h1 className='text-start text-[25px] '>My Dues</h1>
                                         <button onClick={toggleForm} className='ml-auto bg-blue-500 mt-1 mr-2 hover:bg-green-300 text-white font-bold py-2 px-4 rounded h-[20px]]'>
@@ -336,16 +482,16 @@ const Account = (props: Props) => {
                                         </div>
                                     )}
                                     <div className='mt-2'>
-                                    <DataTable
-                                    pagination
-                                    columns={columns}
-                                    data={dues}
-                                    /> 
+                                        <DataTable
+                                            pagination
+                                            columns={columns}
+                                            data={dues}
+                                        />
                                     </div>
                                     {/* Render your Duetable component here */}
                                 </div>
-                                <div className=" col-span-2 w-full border border-solid relative shadow-panelShadow bg-white">
-                                    <div className="w-full p-2">
+                                <div className=" col-span-2 w-full border border-solid relative overflow-x-auto shadow-panelShadow bg-white">
+                                    <div className="w-full p-2 ">
                                         <h1 className='text-start text-[25px]'>Daily Review</h1>
                                         <FakeChart3 />
                                     </div>

@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import Menu from '../components/Menu'
-import bg from "../assets/hero-bg.png"
 import PieChart from '../components/PieChart'
-import Datepicker from 'react-tailwindcss-datepicker'
 import Datatable from '../components/Datatable'
 import axios from 'axios'
 import TransactionForm from '../components/TransactionForm'
 import LineChart from '../components/LineChart'
-// import BarChart from '../components/BarChart'
+import { CiMenuBurger } from "react-icons/ci";
+import { IoIosCloseCircle } from "react-icons/io";
+import useAxiosPrivate from '../axios/axiosPrivate'
+import { useAuth } from '../context/authContext'
+
 
 type Props = {}
 
@@ -16,18 +18,11 @@ type Category = {
     totalAmount: number
 }
 
-type Movie = {
-    _id: string;
-    name: string;
-    description: string;
-    date: string;
-    category: string;
-    payment: number;
-    status: string;
-    mode: string
-};
-
 const Dashboard = (props: Props) => {
+
+    const axiosPrivate = useAxiosPrivate();
+
+    const { auth } = useAuth()
 
 
     const [count, setCount] = useState(0);
@@ -35,16 +30,19 @@ const Dashboard = (props: Props) => {
     const [showForm, setShowForm] = useState<boolean>(false);
     const [categoryData, setCategoryData] = useState<Category[]>([]);
     const [transactionData, setTransactionData] = useState<{ month: string; payment: number }[]>([]);
+    const [showMenu, setShowMenu] = useState<boolean>(false);
 
     const fetch = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/v1/transaction-payment');
+            const response = await axiosPrivate.get('/transaction-payment');
             const data = response.data.newTransactionObject;
             // const sortedData = data.sort((a: { month: string }, b: { month: string }) => {
             //   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             //   return months.indexOf(a.month) - months.indexOf(b.month);
             // });
             setTransactionData(data);
+            // console.log(transactionData);
+
         } catch (error) {
             console.error('Failed to fetch transaction data:', error);
         }
@@ -53,7 +51,7 @@ const Dashboard = (props: Props) => {
 
     const fetchCategory = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/v1/categoryPayment');
+            const response = await axiosPrivate.get('/categoryPayment');
             const data = response.data.formatData;
             // const sortedData = data.sort((a: { month: string }, b: { month: string }) => {
             //   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -73,118 +71,110 @@ const Dashboard = (props: Props) => {
     // fetch all the transaction
 
 
-    const getAllTransaction = async () => {
-        try {
-            const data = await axios.get("http://localhost:5000/api/v1/getAllTransaction")
-            const transactionData = data.data.getTransaction;
-            const totalCount = transactionData.length
-            setCount(totalCount);
-            setTotalAmount(data.data.totalPayment)
-        } catch (error) {
-            console.log(error);
 
-        }
-    }
 
 
 
     useEffect(() => {
-        getAllTransaction();
-    }, [count, totalAmount]);
+        const getAllTransaction = async () => {
+            try {
+                const data = await axiosPrivate.get(`/getAllTransaction`)
+                const transactionData = data.data.getTransaction;
+                const totalCount = transactionData?.length
+                setCount(totalCount);
+                setTotalAmount(data.data.totalPayment)
+            } catch (error) {
+                console.log(error);
+
+            }
+        }
+        getAllTransaction()
+    }, [transactionData]);
 
 
 
-
-
-
-    const [val, setVal] = useState({
-        startDate: new Date(),
-        endDate: new Date()
-    });
-
-    const handleValueChange = (newValue: any) => {
-        console.log("newValue:", newValue);
-        setVal(newValue);
+    const toggleMenu = () => {
+        setShowMenu(!showMenu);
     };
 
     return (
         <>
-            <section className='flex items-center w-full min-h-screen bg-no-repeat bg-center bg-cover '  >
-                <div className="flex flex-col lg:flex-row h-full">
-                    <div className="w-[20px] lg:w-1/4 bg-slack-50 lg:rounded-r-lg p-4 lg:p-10">
-                        <div className="mt-4 relative">
-
-                            <Menu />
-
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-4 gap-12" >
-                        {/* First Line */}
-                        <div className='w-[250px] h-[100px]  border border-solid    flex items-center justify-center shadow-panelShadow'>
-                            <div className='items-center justify-between text-center'>
-                                <h1 className='text-[25px] text-[#FF6384]  font-bold'>₹ 50000</h1>
-                                <h3>Total Income</h3>
-                            </div>
-                        </div>
-                        <div className='w-[250px] h-[100px] border border-solid   flex items-center justify-center shadow-panelShadow'>
-                            <div className='items-center justify-between text-center'>
-                                <h1 className='text-[25px] text-[#6544f8] font-bold'>₹ {totalAmount}</h1>
-                                <h3>Total Expense</h3>
-                            </div>
-                        </div>
-                        <div className='w-[250px] h-[100px] border border-solid  flex items-center justify-center shadow-panelShadow'>
-                            <div className='items-center justify-between text-center '>
-                                <h1 className='text-[25px] text-[#83b632] font-bold'>₹ {50000 - totalAmount}</h1>
-                                <h3>Total Balance</h3>
-                            </div>
-                        </div>
-                        <div className='w-[250px] h-[100px] border border-solid flex items-center justify-center shadow-panelShadow'>
-                            <div className='items-center justify-between text-center'>
-                                <h1 className='text-[25px] text-[#ff944d] font-bold'>{count}</h1>
-                                <h3>Total Transactions</h3>
-                            </div>
-                        </div>
-                        <div className='absolute right-0 mt-[120px]'>
-                                    <button onClick={toggleForm} className=" bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                        Add Transaction
-                                    </button>
-                                </div>
-
-
-                        {/* Second Line */}
-                        <div className='col-span-4 relative mt-10' >
-
-                            {/* Transaction Table */}
-                            <div className='  w-full overflow-hidden shadow-panelShadow'>
+            <section className='flex items-center w-full min-h-screen bg-no-repeat bg-center bg-cover'>
+                <div className='flex flex-col lg:flex-row h-full'>
+                        <div className='w-full lg:w-1/5 bg-slack-50 lg:rounded-r-lg p-4 lg:p-10'>
+                            <div className='mt-4 relative cursor-pointer'>
+                                <button className='lg:hidden absolute top-2 right-4 text-xl focus:outline-none' onClick={toggleMenu}>
+                                    {showMenu ? <CiMenuBurger /> : <IoIosCloseCircle />}
+                                </button>
                                 <div className=''>
-                                    <Datatable />
+                                    {!showMenu && <Menu />}
                                 </div>
-                                
-
-
-                                {showForm && <TransactionForm />}
 
                             </div>
-                           
                         </div>
 
-                        {/* Third Line */}
-                        <div className='col-span-4'>
-                            {/* Line Chart */}
-                            <div className=' grid grid-cols-2'>
-                                <div className='col-span-1 shadow-panelShadow bg-white p-3'>
-                                    <PieChart categoryData={categoryData} fetchCategory={fetchCategory} />
+                    <div className='w-full lg:w-4/5 p-4 lg:p-10'>
+                        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8'>
+                            {/* First Line */}
+                            <div className='w-full sm:w-72 h-36 border border-solid flex items-center justify-center shadow-panelShadow'>
+                                <div className='text-center'>
+                                    <h1 className='text-2xl text-[#FF6384] font-bold'>₹ 50000</h1>
+                                    <h3>Total Income</h3>
                                 </div>
-                                <div className="ml-4 col-span-1">
-                                    <div className="w-full shadow-panelShadow bg-white p-3">
-                                        <LineChart fetch={fetch} transactionData={transactionData} />
+                            </div>
+                            <div className='w-full sm:w-72 h-36 border border-solid flex items-center justify-center shadow-panelShadow'>
+                                <div className='text-center'>
+                                    <h1 className='text-2xl text-[#6544f8] font-bold'>₹ {totalAmount}</h1>
+                                    <h3>Total Expense</h3>
+                                </div>
+                            </div>
+                            <div className='w-full sm:w-72 h-36 border border-solid flex items-center justify-center shadow-panelShadow'>
+                                <div className='text-center'>
+                                    <h1 className='text-2xl text-[#83b632] font-bold'>₹ {50000 - totalAmount}</h1>
+                                    <h3>Total Balance</h3>
+                                </div>
+                            </div>
+                            <div className='w-full sm:w-72 h-36 border border-solid flex items-center justify-center shadow-panelShadow'>
+                                <div className='text-center'>
+                                    <h1 className='text-2xl text-[#ff944d] font-bold'>{count}</h1>
+                                    <h3>Total Transactions</h3>
+                                </div>
+                            </div>
+                            <div className='absolute sm:top-0 right-4 lg:right-0 lg:relative  sm:mt-0 mt-[680px]'>
+                                <button onClick={toggleForm} className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
+                                    Add Transaction
+                                </button>
+                            </div>
+
+                            {/* Second Line */}
+                            <div className='col-span-full mt-8 sm:col-span-2 lg:col-span-full'>
+                                {/* Transaction Table */}
+                                <div className='relative'>
+                                    <Datatable />
+                                    {showForm && (
+                                        <div className='fixed top-0 left-0 w-full h-full flex justify-center items-center backdrop-filter backdrop-blur-lg'>
+                                            <TransactionForm />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Third Line */}
+                            <div className='col-span-full mt-8 lg:col-span-full'>
+                                {/* Line Chart */}
+                                <div className='grid grid-cols-1 sm:grid-cols-2'>
+                                    <div className='shadow-panelShadow bg-white p-3'>
+                                        <PieChart categoryData={categoryData} fetchCategory={fetchCategory} />
+                                    </div>
+                                    <div className='mt-8 sm:mt-0 sm:ml-4 hidden sm:block'>
+                                        <div className='lg:shadow-panelShadow bg-white p-3'>
+                                            <LineChart fetch={fetch} transactionData={transactionData} />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
-
                 </div>
             </section>
 

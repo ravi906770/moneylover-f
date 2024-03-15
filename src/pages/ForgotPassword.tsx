@@ -4,6 +4,8 @@ import fp from "../assets/fp2.avif"
 import bg from "../assets/hero-bg.png"
 import axios from 'axios'
 import { useForm } from 'react-hook-form'
+import useAxiosPrivate from '../axios/axiosPrivate'
+import toast from 'react-hot-toast'
 
 type Props = {}
 
@@ -32,18 +34,21 @@ const ForgotPassword = (props: Props) => {
 
   const navigate = useNavigate()
 
+  const axiosPrivate = useAxiosPrivate()
+
 
   const onSubmit = async (data: formValue) => {
     try {
-      console.log("#@#@#");
-      console.log(data);
+      // console.log("#@#@#");
+      // console.log(data);
       
-      const res = await axios.post("http://localhost:5000/api/v1/forgot-password", 
+      const res = await axiosPrivate.post("/forgot-password", 
         data
       )
      console.log(res)
 
       if (res && res.data.success) {
+        toast.success("Password Updated Successfully!!")
         navigate("/login")
       }
     } catch (error) {

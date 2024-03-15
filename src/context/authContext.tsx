@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 
 
@@ -15,6 +16,7 @@ interface AuthContextType {
   setAuth: React.Dispatch<React.SetStateAction<AuthData>>;
   logout: () => void;
 }
+
 
 
 

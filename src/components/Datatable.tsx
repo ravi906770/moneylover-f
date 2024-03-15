@@ -12,6 +12,8 @@ import { IoCloseCircle } from "react-icons/io5";
 import { MdOutlinePreview } from "react-icons/md";
 import axios from 'axios';
 import Model from './Model';
+import useAxiosPrivate from '../axios/axiosPrivate';
+import toast from 'react-hot-toast';
 // import FilterComponent from './FilterComponent';
 
 type Props = {
@@ -126,6 +128,8 @@ const customStyles = {
 
 const Datatable = (props: Props) => {
 
+  const axiosPrivate = useAxiosPrivate();
+
     const [expandedRow, setExpandedRow] = useState<Movie | null>(null);
     const [showUpdateForm, setShowUpdateForm] = useState(false);
     const [data , setData] = useState<Movie[]>([]);
@@ -158,7 +162,7 @@ const Datatable = (props: Props) => {
 
     const getAllTransaction = async()=>{
         try {
-            const data = await axios.get("http://localhost:5000/api/v1/getAllTransaction")
+            const data = await axiosPrivate.get("/getAllTransaction")
             const transactionData = data.data.getTransaction;
             setData(transactionData)
         } catch (error) {
@@ -233,7 +237,7 @@ const Datatable = (props: Props) => {
 
     const getAllCategory = ()=>{
         try {
-            axios.get("http://localhost:5000/api/v1/getCategory").then((response) => {
+          axiosPrivate.get("/getCategory").then((response) => {
             //   console.log(response.data.getCategory);
               setCategories(response.data.getCategory)
       
@@ -257,7 +261,8 @@ const Datatable = (props: Props) => {
     
       const handleDelete = async(_id: string)=>{
             try {
-                await axios.delete(`http://localhost:5000/api/v1/delete-transaction/${_id}`)
+                await axiosPrivate.delete(`/delete-transaction/${_id}`)
+                toast.success("Transactin Delete Successfully!!")
                 getAllTransaction();
             } catch (error) {
                 console.log(error)

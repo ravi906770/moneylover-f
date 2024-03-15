@@ -82,7 +82,7 @@ const PieChart :React.FC<Props> = ({categoryData,fetchCategory}) => {
       };
 
       chartRef.current = new Chart(ctx, config);
-    } else if (chartRef.current && categoryData.length > 0) {
+    } else if (chartRef.current ) {
       chartRef.current.data.datasets[0].data = categoryData.map(item=>item.totalAmount);
       chartRef.current.data.labels = categoryData.map(item => item.category)
       chartRef.current.update();
@@ -90,7 +90,8 @@ const PieChart :React.FC<Props> = ({categoryData,fetchCategory}) => {
   }, [categoryData]);
 
   return (
-    <div className="h-96 w-96">
+    <div className="lg:h-96 lg:w-96 sm:h-[330px] sm:w-[280px] md:h-[320px]
+">
       <canvas id="Chart"></canvas>
     </div>
   );

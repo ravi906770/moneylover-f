@@ -5,8 +5,8 @@ import bg from "../assets/hero-bg.png"
 import { useAuth } from '../context/authContext'
 import axios from 'axios'
 import { FaGoogle } from 'react-icons/fa6'
-import {toast} from 'react-toastify'
 import { useForm } from 'react-hook-form'
+import  toast  from 'react-hot-toast'
 
 type Props = {}
   
@@ -53,6 +53,9 @@ const Login = (props: Props) => {
           },
           access_token
         })
+       toast.success("login Successfully!!")
+        // console.log(auth);
+        
         // setTimeout(()=>{
         //   console.log(auth)
         // },5000)
