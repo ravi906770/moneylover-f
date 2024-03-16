@@ -7,6 +7,7 @@ import Dashboard from '../pages/Dashboard';
 import Profile from '../pages/Profile';
 import SplitBill from '../pages/SplitBill';
 import Settings from '../pages/Settings';
+import Loader from '../components/Loader';
 const Register = React.lazy(()=>import('../pages/Register')) ;
 const Homepage = React.lazy(()=>import('../pages/Homepage')) ;
 const Login = React.lazy(()=>import('../pages/Login')) ;
@@ -34,8 +35,8 @@ const Routing = (props: Props) => {
 
   return (
     <>
-    <React.Suspense>
-    <Routes>
+    <React.Suspense fallback={<Loader/>}>  
+      <Routes>
         <Route path='/' element={<Homepage/>}/>
         <Route path='/register' element={<Register/>}/>
         <Route path='/home' element={<Homepage/>}/>
@@ -57,6 +58,8 @@ const Routing = (props: Props) => {
         <Route path='/error' element={<Error/>}/>
         <Route path='/test' element={<Test/>}/>
     </Routes>
+    
+  
     </React.Suspense>
  
     </>
