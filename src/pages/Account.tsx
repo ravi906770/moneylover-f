@@ -81,7 +81,8 @@ const Account = (props: Props) => {
         '#20B2AA', // Light Sea Green
         '#FF7F50', // Coral
         '#32CD32', // Lime Green
-        '#FFD700'  // Gold
+        '#FFD700',  // Gold
+        '#A52A2A'
     ];
 
     const [showForm, setShowForm] = useState(false);
@@ -267,7 +268,7 @@ const Account = (props: Props) => {
                         <div className='flex gap-10 flex-1 shadow-panelShadow'>
                             <div className='sm:w-full w-3/4 h-[500px] relative p-2'>
                                 <h1 className='text-center text-[25px]'>Category Expense</h1>
-                                <div className='m-5 p-2 flex flex-col gap-2'>
+                                <div className='m-5 p-2 flex flex-col gap-1'>
                                     {
                                         categoryData.map((item, index) => {
                                             var budgetAmount = 0;

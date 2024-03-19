@@ -64,6 +64,9 @@ const Transaction = (props: Props) => {
 
   const [Open, setOpen] = useState(false);
 
+  console.log(categories);
+  
+
 
   const [val, setVal] = useState({
     startDate: new Date(),
@@ -147,9 +150,9 @@ const handleValueChange = (newValue : any )=> {
   }
 
   
-  const getallTransaction = () => {
+  const getallTransaction = async() => {
     try {
-      axiosPrivate.get("/getAllTransaction").then((response) => {
+     await axiosPrivate.get("/getAllTransaction").then((response) => {
         // console.log(response.data.getTransaction);
         setTransaction(response.data.getTransaction)
 

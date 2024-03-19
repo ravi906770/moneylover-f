@@ -1,27 +1,77 @@
 import React, { useEffect, useState } from 'react'
 import Menu from '../components/Menu'
+
+import { CiMenuBurger } from "react-icons/ci";
+import { IoIosCloseCircle } from "react-icons/io";
+import toast from 'react-hot-toast';
+// import { axiosPrivate } from '../axios/axios';
+import useAxiosPrivate from '../axios/axiosPrivate';
 import axios from 'axios'
 import user from "../assets/user.avif"
 import { IoPeople } from "react-icons/io5";
-import { CiMenuBurger } from "react-icons/ci";
-import { IoIosCloseCircle } from "react-icons/io";
+import { useNavigate } from 'react-router-dom';
+
 
 type Props = {
 
 }
 
+type User = {
+    firstname : string,
+    lastname : string,
+    email : string,
+    mobile_no : string
+}
+
 
 const Settings = (props: Props) => {
 
+    const axiosPrivate = useAxiosPrivate()
+
     const [showMenu, setShowMenu] = useState<boolean>(false);
+    const [userProfile , setUserProfile] = useState<User>()
 
+    const navigate = useNavigate()
 
-    const handleUpdate = () => {
-
+    const getUser =async ()=> {
+        try {
+            const res = await axiosPrivate.get("http://localhost:5000/api/v1/profile")
+            if(res && res.data.success){
+                setUserProfile(res.data.data)
+            }
+        } catch (error) {
+            toast.error("Something went wrong while getting user details!!")
+            console.log(error)
+        }
     }
 
-    const handleDelete = () => {
+    useEffect(()=>{
+        getUser()
+    },[])
 
+    const handleUpdate = async(data : User)=>{
+        try {
+            const res = await axiosPrivate.put("http://localhost:5000/api/v1/update" , data)
+            if(res && res.data.success){
+                toast.success("Profile Updated Successfully!!")
+                navigate("/setting")
+            }
+        } catch (error) {
+            toast.error("Something went wrong while update the profile!!")
+        }
+    }
+
+
+    const handleDelete = async() => {
+        try {
+            const res = await axiosPrivate.delete("http://localhost:5000/api/v1/delete")
+            if(res && res.data.success){
+                toast.success("Profile Delete Successfully!!")
+                localStorage.removeItem("user")
+            }
+        } catch (error) {
+            toast.error("something went wrong while deleting the profile!!")
+        }
     }
 
     const toggleMenu = () => {
@@ -66,19 +116,19 @@ const Settings = (props: Props) => {
         <div className='flex flex-col gap-5 mt-5 w-full md:w-[70%]'>
             <div className='w-full'>
                 <label className=''>Your Name:</label>
-                <input type="text" className='border border-gray-300 rounded-md p-2 w-full text-[15px]' placeholder='Ravi Pankhaniya' />
+                <input type="text" className='border border-gray-300 rounded-md p-2 w-full text-[15px]' placeholder={userProfile?.firstname} />
             </div>
             <div className='w-full'>
                 <label>Your Email:</label>
-                <input type="text" className='border border-gray-300 rounded-md p-2 w-full text-[15px] ' placeholder='pankhaniyaravi05@gmail.com' />
+                <input type="text" className='border border-gray-300 rounded-md p-2 w-full text-[15px] ' placeholder={userProfile?.email} />
             </div>
             <div className='w-full'>
                 <label>Your Contact:</label>
-                <input type="text" className='border border-gray-300 rounded-md p-2 w-full text-[15px] ' placeholder='+91 8849129947' />
+                <input type="text" className='border border-gray-300 rounded-md p-2 w-full text-[15px] ' placeholder={userProfile?.mobile_no} />
             </div>
         </div>
         <div className='flex flex-col gap-5 mt-[75px] ml-0 md:ml-10'>
-            <button className='bg-blue-500 hover:bg-green-500 text-white font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400' onClick={handleUpdate}>Update Profile</button>
+            {/* <button className='bg-blue-500 hover:bg-green-500 text-white font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400' onClick={handleUpdate}>Update Profile</button> */}
             <button className='bg-red-500 hover:bg-green-500 text-white font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400' onClick={handleDelete}>Delete Profile</button>
         </div>
     </div>

@@ -32,6 +32,8 @@ const Dashboard = (props: Props) => {
     const [transactionData, setTransactionData] = useState<{ month: string; payment: number }[]>([]);
     const [showMenu, setShowMenu] = useState<boolean>(false);
 
+    
+
     const fetch = async () => {
         try {
             const response = await axiosPrivate.get('/transaction-payment');

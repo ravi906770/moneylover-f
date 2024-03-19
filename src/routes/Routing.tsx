@@ -16,7 +16,7 @@ const Transaction = React.lazy(()=>import('../pages/Transaction')) ;
 const Blog = React.lazy(()=>import('../pages/Blog')) ;
 const About = React.lazy(()=>import('../pages/About')) ;
 const Feedback = React.lazy(()=>import('../pages/Feedback')) ;
-
+const ErrorPage = React.lazy(()=>import("../components/ErrorPage"))
 const Account = React.lazy(()=>import('../pages/Account')) ;
 const ForgotPassword = React.lazy(()=>import('../pages/ForgotPassword')) ;
 const UseForm = React.lazy(()=>import('../pages/UseForm')) ;
@@ -57,6 +57,7 @@ const Routing = (props: Props) => {
         <Route path='/form' element={<YupForm/>}/>
         <Route path='/error' element={<Error/>}/>
         <Route path='/test' element={<Test/>}/>
+        <Route path='/error404' element={<ErrorPage/>}/>
     </Routes>
     
   

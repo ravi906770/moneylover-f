@@ -68,7 +68,9 @@ const PieChart :React.FC<Props> = ({categoryData,fetchCategory}) => {
               '#20B2AA', // Light Sea Green
               '#FF7F50', // Coral
               '#32CD32', // Lime Green
-              '#FFD700'  // Gold
+              '#FFD700',  // Gold
+              '#A52A2A'  // Gold '#FFD700'
+
             ]
           }]
         },

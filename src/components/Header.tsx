@@ -119,7 +119,8 @@ const Header: React.FC = () => {
                         {showDropdown && (
                            <ul className="absolute top-15 w-36  bg-white border rounded shadow-md">
                            <li className="py-2 px-4 hover:bg-gray-100 transition duration-300">
-                               <Link to="/dashboard" className="block text-sm text-gray-800 hover:text-gray-900">Dashboard</Link>
+                            {auth.access_token ? ( <Link to="/dashboard" className="block text-sm text-gray-800 hover:text-gray-900">Dashboard</Link>):( <Link to="/error404" className="block text-sm text-gray-800 hover:text-gray-900">Dashboard</Link>)}
+                              
                            </li>
                            <li className="py-2 px-4 hover:bg-gray-100 transition duration-300">
                                <Link to="/setting" className="block text-sm text-gray-800 hover:text-gray-900">Settings</Link>
