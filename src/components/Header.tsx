@@ -130,9 +130,12 @@ const Header: React.FC = () => {
                     </div>
                     {auth.access_token ? (
                         <>
-                            <button onClick={handleLogout} className="bg-primaryColor hover:bg-green-400 text-white py-2 px-6 font-[600] h-[44px] flex items-center justify-center rounded-[50px]">
+                        <Link to="/login">
+                        <button onClick={handleLogout} className="bg-primaryColor hover:bg-green-400 text-white py-2 px-6 font-[600] h-[44px] flex items-center justify-center rounded-[50px]">
                                 Logout
                             </button>
+                        </Link>
+                            
                         </>
                     ) : (
                         <Link to="/register">
