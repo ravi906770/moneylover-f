@@ -36,6 +36,12 @@ type Category = {
     totalAmount: number
 }
 
+type Limit = {
+    income : number,
+    daily_limit : number
+}
+
+
 type CategoryBudget = {
     category: string,
     budget_boundry: number
@@ -73,6 +79,9 @@ const Account = (props: Props) => {
     const axiosPrivate = useAxiosPrivate()
 
 
+    
+
+
     const colors = [
         '#FF6384', // Red
         '#36A2EB', // Blue
@@ -96,8 +105,23 @@ const Account = (props: Props) => {
     const [selectedDate, setSelectedDate] = useState<string>('');
     const [dailyPaymentData, setDailyPaymentData] = useState<{ date: string; payment: number }[]>([]);
     const [selectedMonth, setSelectedMonth] = useState("")
+    const [limitData , setLimitData] = useState<Limit[]>([])
 
+    useEffect(()=>{
+        const getLimit = async()=>{
+            try {
+                const res = await axiosPrivate.get("http://localhost:5000/api/v1/getLimit")
+                if(res && res.data.success){
+                    setLimitData(res.data.data)
+                }
+            } catch (error) {
+                console.log(error);
+                
+            }
+        }
 
+        getLimit()
+    },[])
 
 
     const form = useForm<formValue>();
@@ -267,6 +291,7 @@ const Account = (props: Props) => {
                         {/* First Line */}
                         <div className='flex gap-10 flex-1 shadow-panelShadow'>
                             <div className='sm:w-full w-3/4 h-[500px] relative p-2'>
+                              
                                 <h1 className='text-center text-[25px]'>Category Expense</h1>
                                 <div className='m-5 p-2 flex flex-col gap-1'>
                                     {
@@ -321,21 +346,21 @@ const Account = (props: Props) => {
                                     <div className='flex sm:gap-4 relative gap-10'>
                                         <div className="relative inline-block ">
                                             <h4>Daily Budget Limit</h4>
-                                            <Circle percent={((filterDailyData[0]?.payment)/1700)*100} strokeWidth={3}  strokeColor={((filterDailyData[0]?.payment) / 1700) * 100 > 90 ? "#e53935" : "#4CAF50"} className='w-[125px]' />
+                                            <Circle percent={((filterDailyData[0]?.payment)/(limitData[0]?.daily_limit))*100} strokeWidth={3}  strokeColor={((filterDailyData[0]?.payment) / (limitData[0]?.daily_limit)) * 100 > 90 ? "#e53935" : "#4CAF50"} className='w-[125px]' />
                                             <span className="absolute inset-0 flex items-center justify-center text-[11px]">Total Usage : {(filterDailyData[0]?.payment)}</span>
                                         </div>
                                         <div className=' sm:absolute right-0 flex flex-col justify-end'>
                                             <div>
                                                 <p className='text-textColor text-[15px]'>Budget Limit:</p>
-                                                <p className='text-primaryColor font-bold '>1700</p>
+                                                <p className='text-primaryColor font-bold '>{limitData[0]?.daily_limit}</p>
                                             </div>
                                             <div>
-                                                <p className='text-textColor text-[15px]'>Total Usage:</p>
+                                                <p className='text-textColor text-[15px]'>Total Usage:</p>  
                                                 <p className='text-green-500 font-bold '>{(filterDailyData[0]?.payment)}</p>
                                             </div>
                                             <div>
                                                 <p className='text-textColor text-[15px]'>Remaining Balance:</p>
-                                                <p className='text-red-500 font-bold '>{1700 - (filterDailyData[0]?.payment|| 0)}</p>
+                                                <p className='text-red-500 font-bold '>{(limitData[0]?.daily_limit) - (filterDailyData[0]?.payment|| 0)}</p>
                                             </div>
 
                                         </div>
@@ -359,7 +384,7 @@ const Account = (props: Props) => {
 
                                     <div className="relative inline-block mt-4">
                                         <h4>Monthly Review</h4>
-                                        <Circle percent={((filterData[0]?.payment / 50000) * 100)} strokeWidth={5} strokeColor={((filterData[0]?.payment) / 50000) * 100 > 90 ? "#e53935" : "#4CAF50"} className='w-[125px]' />
+                                        <Circle percent={((filterData[0]?.payment /(limitData[0]?.income)) * 100)} strokeWidth={5} strokeColor={((filterData[0]?.payment) /(limitData[0]?.income) ) * 100 > 90 ? "#e53935" : "#4CAF50"} className='w-[125px]' />
                                         <span className="absolute inset-0 flex items-center justify-center text-[11px]">Total Usage : {filterData[0]?.payment}</span>
                                     </div>
                                     
@@ -367,7 +392,7 @@ const Account = (props: Props) => {
                                     <div className='mt-9 '>
                                         <div>
                                             <p className='text-textColor text-[15px]'>Budget Limit:</p>
-                                            <p className='text-primaryColor font-bold '>50000</p>
+                                            <p className='text-primaryColor font-bold '>{limitData[0]?.income}</p>
                                         </div>
                                         <div>
                                             <p className='text-textColor text-[15px]'>Total Usage:</p>
@@ -375,7 +400,7 @@ const Account = (props: Props) => {
                                         </div>
                                         <div>
                                             <p className='text-textColor text-[15px]'>Remaining Balance:</p>
-                                            <p className='text-red-500 font-bold '>{50000 - (filterData[0]?.payment || 0)}</p>
+                                            <p className='text-red-500 font-bold '>{(limitData[0]?.income) - (filterData[0]?.payment || 0)}</p>
                                         </div>
 
                                     </div>

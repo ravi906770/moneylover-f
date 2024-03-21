@@ -10,7 +10,7 @@ type Props = {
 type formValue = {
     name : string,
     description : string,
-    date : Date,
+    date : string,
     category:string,
     payment : number,
     status : string,
@@ -57,7 +57,7 @@ const SplitBillTable = (props: Props) => {
     const getAllSplitBill = async()=>{
         try {
             const res = await axiosPrivate.get("/getsplitbill")
-            console.log("reach")
+            // console.log("reach")
             if(res && res.data.success){
                 console.log(res.data.data)
                 setData(res.data.data)

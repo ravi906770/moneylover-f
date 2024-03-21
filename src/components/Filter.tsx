@@ -204,6 +204,10 @@ export const Filters = [
     {
       _id : 8,
       category : "misc" 
+    },
+    {
+      _id : 9,
+      category : "invest" 
     }
   ]
 
