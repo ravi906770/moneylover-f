@@ -4,6 +4,7 @@ import axios from 'axios';
 import { IoClose, IoCloseCircle } from 'react-icons/io5';
 import useAxiosPrivate from '../axios/axiosPrivate';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {}
 
@@ -50,6 +51,8 @@ const TransactionForm = (props: Props) => {
     setShowForm(!showForm)
   };
 
+  const navigate = useNavigate()
+
   const form = useForm<formValue>({})
 
   const { register, handleSubmit, setValue, formState } = form;
@@ -78,7 +81,8 @@ const TransactionForm = (props: Props) => {
       const res = await axiosPrivate.post(`/transaction`, data)
       if (res && res.data.success) {
         toast.success("Transaction Added Successfully!!")
-        setShowForm(false);
+        navigate("/account")
+        setShowForm(!showForm);
         setTransaction([res.data.newTransaction, ...transaction]);
         // fetch()
         // fetchCategory()

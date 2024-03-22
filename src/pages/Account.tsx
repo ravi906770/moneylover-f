@@ -3,7 +3,7 @@ import Menu from '../components/Menu'
 import { Circle, Line } from 'rc-progress';
 import atm from "../assets/bank3.jpg"
 import 'react-calendar/dist/Calendar.css';
-import { CiBookmarkPlus} from "react-icons/ci";
+import { CiBookmarkPlus } from "react-icons/ci";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { AiFillBank } from "react-icons/ai";
 import mastercard from "../assets/mastercard.svg"
@@ -18,6 +18,7 @@ import { CiMenuBurger } from "react-icons/ci";
 import { IoIosCloseCircle } from "react-icons/io";
 import useAxiosPrivate from '../axios/axiosPrivate';
 import toast from 'react-hot-toast';
+import { filter } from '../components/Filter';
 
 
 type Props = {}
@@ -37,8 +38,8 @@ type Category = {
 }
 
 type Limit = {
-    income : number,
-    daily_limit : number
+    income: number,
+    daily_limit: number
 }
 
 
@@ -79,7 +80,7 @@ const Account = (props: Props) => {
     const axiosPrivate = useAxiosPrivate()
 
 
-    
+
 
 
     const colors = [
@@ -105,23 +106,27 @@ const Account = (props: Props) => {
     const [selectedDate, setSelectedDate] = useState<string>('');
     const [dailyPaymentData, setDailyPaymentData] = useState<{ date: string; payment: number }[]>([]);
     const [selectedMonth, setSelectedMonth] = useState("")
-    const [limitData , setLimitData] = useState<Limit[]>([])
+    const [limitData, setLimitData] = useState<Limit[]>([])
+    const [openForm, setOpenForm] = useState(false)
+    const [category, setCategory] = useState("")
+    const [budget_boundry, setBudget_Boundry] = useState(0)
 
-    useEffect(()=>{
-        const getLimit = async()=>{
+
+    useEffect(() => {
+        const getLimit = async () => {
             try {
                 const res = await axiosPrivate.get("http://localhost:5000/api/v1/getLimit")
-                if(res && res.data.success){
+                if (res && res.data.success) {
                     setLimitData(res.data.data)
                 }
             } catch (error) {
                 console.log(error);
-                
+
             }
         }
 
         getLimit()
-    },[])
+    }, [])
 
 
     const form = useForm<formValue>();
@@ -217,8 +222,8 @@ const Account = (props: Props) => {
 
         try {
             const response = await axiosPrivate.get(`/dailydata`);
-                // console.log(response);
-                
+            // console.log(response);
+
             if (response.data.success) {
                 setDailyPaymentData(response.data.dailyPaymentData);
             } else {
@@ -235,10 +240,10 @@ const Account = (props: Props) => {
 
 
     // filter for the getting the daily payment based on the selected date
-    const filterDailyData =  dailyPaymentData?.filter(item => item.date === selectedDate) 
-   
+    const filterDailyData = dailyPaymentData?.filter(item => item.date === selectedDate)
+
     // console.log(filterDailyData);
-    
+
 
 
     useEffect(() => {
@@ -267,33 +272,77 @@ const Account = (props: Props) => {
         setShowMenu(!showMenu);
     };
 
-    // const amount = filterData[0].payment;
+    const formHandler = () => {
+        setOpenForm(!openForm)
+    }
 
-    const [value, onChange] = useState<Value>(new Date());
-    const [startDate, setStartDate] = useState(new Date());
+    const handleSubmitForm: React.FormEventHandler<HTMLFormElement> = async (e) => {
+        e.preventDefault();
+        try {
+            const res = await axiosPrivate.post("http://localhost:5000/api/v1/category", { category, budget_boundry })
+            if (res && res.data.success) {
+                toast.success("Category added succssfully!!")
+            }
+        } catch (error) {
+            toast.error("Something went wrong while adding the category!!")
+        }
+
+
+    }
+
+
     return (
         <>
             <section className='flex items-center w-full min-h-screen bg-no-repeat bg-center bg-cover' >
                 <div className="flex flex-col lg:flex-row h-full">
                     <div className='sm:w-full lg:w-1/5 w-3/4 bg-slack-50 lg:rounded-r-lg p-4 lg:p-10'>
-                            <div className='mt-4 relative cursor-pointer'>
-                                <button className='lg:hidden absolute top-0 right-4 text-xl focus:outline-none' onClick={toggleMenu}>
-                                    {showMenu ? <CiMenuBurger /> : <IoIosCloseCircle />}
-                                </button>
-                                <div className=''>
-                                    {!showMenu && <Menu />}
-                                </div>
-
+                        <div className='mt-4 relative cursor-pointer'>
+                            <button className='lg:hidden absolute top-0 right-4 text-xl focus:outline-none' onClick={toggleMenu}>
+                                {showMenu ? <CiMenuBurger /> : <IoIosCloseCircle />}
+                            </button>
+                            <div className=''>
+                                {!showMenu && <Menu />}
                             </div>
+
                         </div>
+                    </div>
 
                     <div className="sm:grid sm:grid-cols-3 gap-10 mt-5 flex flex-col">
                         {/* First Line */}
                         <div className='flex gap-10 flex-1 shadow-panelShadow'>
-                            <div className='sm:w-full w-3/4 h-[500px] relative p-2'>
-                              
+                            <div className='sm:w-full w-3/4 h-[500px] relative p-2' >
+
                                 <h1 className='text-center text-[25px]'>Category Expense</h1>
-                                <div className='m-5 p-2 flex flex-col gap-1'>
+                                <div className='absolute right-0'>
+                                    <button onClick={formHandler} className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>Add Category</button>
+                                    {
+                                        openForm &&
+                                        <form onSubmit={handleSubmitForm} className='absolute top-5 right-10 bg-white p-6 rounded-lg shadow-lg md:w-96 w-full'>
+                                        <div className="mb-4">
+                                            <label htmlFor="billName" className="block text-sm font-semibold mb-2">Add your Category</label>
+                                            <select onChange={(e)=>setCategory(e.target.value)} className="w-full bg-slate-200 px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500">
+                                                <option value="">Select category</option>
+                                                {filter.map((item, id) => (
+                                                    <option value={item.category} key={item._id}>{item.category}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="mb-4">
+                                            <label htmlFor="billAmount" className="block text-sm font-semibold mb-2">Add your Budget Boundary</label>
+                                            <input onChange={(e) => setBudget_Boundry(parseInt(e.target.value))} type="number" id="billAmount" className="w-full bg-slate-200 px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500" />
+                                        </div>
+                                        <div className="text-center">
+                                            <button type="submit" className="bg-blue-700 hover:bg-blue-600 text-white font-semibold px-6 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full">
+                                                Submit
+                                            </button>
+                                        </div>
+                                    </form>
+                                    
+                                    
+
+                                    }
+                                </div>
+                                <div className='m-5 p-2 flex flex-col gap-1 mt-[50px]'>
                                     {
                                         categoryData.map((item, index) => {
                                             var budgetAmount = 0;
@@ -315,7 +364,7 @@ const Account = (props: Props) => {
 
                                                     </div>
                                                     {/* strokeColor={((filterData[0]?.payment) / 50000) * 100 > 90 ? "#e53935" : "#4CAF50"}  */}
-                                                    <Line percent={(item.totalAmount / budgetAmount) * 100} strokeWidth={3}  strokeColor={((item.totalAmount / budgetAmount) * 100) > 90 ? "#e53935" : colors[index % colors.length]} />
+                                                    <Line percent={(item.totalAmount / budgetAmount) * 100} strokeWidth={3} strokeColor={((item.totalAmount / budgetAmount) * 100) > 90 ? "#e53935" : colors[index % colors.length]} />
                                                     {showForm && (
                                                         <div className="bg-gray-100 p-4 absolute rounded mt-4">
                                                             {/* Form for adding budget limit */}
@@ -346,7 +395,7 @@ const Account = (props: Props) => {
                                     <div className='flex sm:gap-4 relative gap-10'>
                                         <div className="relative inline-block ">
                                             <h4>Daily Budget Limit</h4>
-                                            <Circle percent={((filterDailyData[0]?.payment)/(limitData[0]?.daily_limit))*100} strokeWidth={3}  strokeColor={((filterDailyData[0]?.payment) / (limitData[0]?.daily_limit)) * 100 > 90 ? "#e53935" : "#4CAF50"} className='w-[125px]' />
+                                            <Circle percent={((filterDailyData[0]?.payment) / (limitData[0]?.daily_limit)) * 100} strokeWidth={3} strokeColor={((filterDailyData[0]?.payment) / (limitData[0]?.daily_limit)) * 100 > 90 ? "#e53935" : "#4CAF50"} className='w-[125px]' />
                                             <span className="absolute inset-0 flex items-center justify-center text-[11px]">Total Usage : {(filterDailyData[0]?.payment)}</span>
                                         </div>
                                         <div className=' sm:absolute right-0 flex flex-col justify-end'>
@@ -355,12 +404,12 @@ const Account = (props: Props) => {
                                                 <p className='text-primaryColor font-bold '>{limitData[0]?.daily_limit}</p>
                                             </div>
                                             <div>
-                                                <p className='text-textColor text-[15px]'>Total Usage:</p>  
+                                                <p className='text-textColor text-[15px]'>Total Usage:</p>
                                                 <p className='text-green-500 font-bold '>{(filterDailyData[0]?.payment)}</p>
                                             </div>
                                             <div>
                                                 <p className='text-textColor text-[15px]'>Remaining Balance:</p>
-                                                <p className='text-red-500 font-bold '>{(limitData[0]?.daily_limit) - (filterDailyData[0]?.payment|| 0)}</p>
+                                                <p className='text-red-500 font-bold '>{(limitData[0]?.daily_limit) - (filterDailyData[0]?.payment || 0)}</p>
                                             </div>
 
                                         </div>
@@ -384,10 +433,10 @@ const Account = (props: Props) => {
 
                                     <div className="relative inline-block mt-4">
                                         <h4>Monthly Review</h4>
-                                        <Circle percent={((filterData[0]?.payment /(limitData[0]?.income)) * 100)} strokeWidth={5} strokeColor={((filterData[0]?.payment) /(limitData[0]?.income) ) * 100 > 90 ? "#e53935" : "#4CAF50"} className='w-[125px]' />
+                                        <Circle percent={((filterData[0]?.payment / (limitData[0]?.income)) * 100)} strokeWidth={5} strokeColor={((filterData[0]?.payment) / (limitData[0]?.income)) * 100 > 90 ? "#e53935" : "#4CAF50"} className='w-[125px]' />
                                         <span className="absolute inset-0 flex items-center justify-center text-[11px]">Total Usage : {filterData[0]?.payment}</span>
                                     </div>
-                                    
+
 
                                     <div className='mt-9 '>
                                         <div>
