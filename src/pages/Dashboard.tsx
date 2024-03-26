@@ -16,6 +16,17 @@ import toast from 'react-hot-toast'
 
 type Props = {}
 
+type Movie = {
+    _id: string;
+    name: string;
+    description: string;
+    date: string;
+    category: string;
+    payment: number;
+    status: string;
+    mode: string
+  };
+
 type Category = {
     category: string,
     totalAmount: number
@@ -35,32 +46,39 @@ const Dashboard = (props: Props) => {
 
     const [count, setCount] = useState(0);
     const [totalAmount, setTotalAmount] = useState(0);
-    const [showForm, setShowForm] = useState<boolean>(false);
+    // const [showForm, setShowForm] = useState<boolean>(false);
     const [categoryData, setCategoryData] = useState<Category[]>([]);
+
+    const [data, setData] = useState<Movie[]>([]);
     const [transactionData, setTransactionData] = useState<{ month: string; payment: number }[]>([]);
     const [showMenu, setShowMenu] = useState<boolean>(false);
 
     const [limitData, setLimitData] = useState<Limit[]>([])
     const [showLimitForm , setShowLimitForm] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleClose = () => {
+      setIsOpen(!isOpen);
+      getAllTransaction()
+    };
 
 
     const handleLimitForm = ()=>{
         setShowLimitForm(!showLimitForm)
     }
+    const getLimit = async () => {
+        try {
+            const res = await axiosPrivate.get("http://localhost:5000/api/v1/getLimit")
+            if (res && res.data.success) {
+                setLimitData(res.data.data)
+            }
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
 
     useEffect(() => {
-        const getLimit = async () => {
-            try {
-                const res = await axiosPrivate.get("http://localhost:5000/api/v1/getLimit")
-                if (res && res.data.success) {
-                    setLimitData(res.data.data)
-                }
-            } catch (error) {
-                console.log(error);
-
-            }
-        }
-
         getLimit()
     }, [])
 
@@ -75,6 +93,7 @@ const Dashboard = (props: Props) => {
             const res = await axiosPrivate.post("http://localhost:5000/api/v1/addLimit" , data)
             if(res && res.data.success){
                 toast.success("Limit Added Successfully!!!")
+                getLimit()
                 setShowLimitForm(!showLimitForm)
             }
         } catch (error) {
@@ -119,32 +138,32 @@ const Dashboard = (props: Props) => {
     }
 
 
-    const toggleForm = (): void => {
-        setShowForm(!showForm);
-    };
+    
 
     // fetch all the transaction
 
 
 
+    const getAllTransaction = async () => {
+        try {
+            const data = await axiosPrivate.get(`/getAllTransaction`)
+            const transactionData = data.data.getTransaction;
+            const totalCount = transactionData?.length
+            setData(data.data.getTransaction)
+            setCount(totalCount);
+            setTotalAmount(data.data.totalPayment)
+            fetchCategory()  // change the pie chart
+            fetch()   // change the line chart 
+        } catch (error) {
+            console.log(error);
 
+        }
+    }
 
 
     useEffect(() => {
-        const getAllTransaction = async () => {
-            try {
-                const data = await axiosPrivate.get(`/getAllTransaction`)
-                const transactionData = data.data.getTransaction;
-                const totalCount = transactionData?.length
-                setCount(totalCount);
-                setTotalAmount(data.data.totalPayment)
-            } catch (error) {
-                console.log(error);
-
-            }
-        }
         getAllTransaction()
-    }, [transactionData]);
+    }, []);
 
 
 
@@ -178,7 +197,7 @@ const Dashboard = (props: Props) => {
                                <input type="number" id="billName" className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500" {...register("income")}/>
                            </div>
                            <div className="mb-4">
-                               <label htmlFor="billAmount" className="block text-sm font-semibold mb-2">Your Monthly Limit</label>
+                               <label htmlFor="billAmount" className="block text-sm font-semibold mb-2">Your Daily Limit</label>
                                <input type="number" id="billAmount" className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500" {...register("daily_limit")}/>
                            </div>
                            <div className="text-center">
@@ -218,7 +237,7 @@ const Dashboard = (props: Props) => {
                             </div>
                             <div className='absolute  sm:top-0 right-4 lg:right-0 lg:relative  sm:mt-0 mt-[680px]'>
                                <div className=''>
-                               <button onClick={toggleForm} className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
+                               <button onClick={()=>setIsOpen(true)} className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
                                     Add Transaction
                                 </button>
                                 {/* <div className=''>
@@ -232,10 +251,10 @@ const Dashboard = (props: Props) => {
                             <div className='col-span-full mt-8 sm:col-span-2 lg:col-span-full'>
                                 {/* Transaction Table */}
                                 <div className='relative'>
-                                    <Datatable />
-                                    {showForm && (
-                                        <div className='fixed top-0 left-0 w-full h-full flex justify-center items-center backdrop-filter backdrop-blur-lg'>
-                                            <TransactionForm />
+                                    <Datatable data = {data} setData = {setData} getAllTransaction = {getAllTransaction}/>
+                                    {isOpen && (
+                                        <div className='fixed top-0 left-0 w-full h-full flex justify-center items-center'>
+                                            <TransactionForm handleClose = {handleClose}/>
                                         </div>
                                     )}
                                 </div>

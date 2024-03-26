@@ -44,7 +44,6 @@ const PieChart :React.FC<Props> = ({categoryData,fetchCategory}) => {
 
 
     useEffect(()=>{
-   
       fetchCategory();
      },[])
 

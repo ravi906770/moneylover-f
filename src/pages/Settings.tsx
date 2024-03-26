@@ -110,7 +110,7 @@ const Settings = (props: Props) => {
                         <div className="w-full lg:w-full p-4 lg:p-10">
                             <div className="border border-solid p-4 rounded-lg  shadow-panelShadow">
                                 <h2 className="text-lg font-semibold mb-4">My Details</h2>
-                                {/* <div className='flex rounded-lg'>
+                                <div className='flex rounded-lg'>
                                     <div className='w-full mr-4 flex gap-5'>
                                         <img src={user} className='rounded-full w-1/3' alt='User Avatar' />
                                         <div className='flex flex-col justify-center items-center gap-5'>
@@ -118,7 +118,7 @@ const Settings = (props: Props) => {
                                             <button className='bg-red-500 hover:bg-green-500 text-white sm:font-medium text-[15px] sm:py-2 sm:px-4 p-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400'>Delete Image</button>
                                         </div>
                                     </div>
-                                </div> */}
+                                </div>
                                 <div>
                                     <form className='mt-5'>
                                         <div className='flex flex-col md:flex-row items-start'>
@@ -155,8 +155,6 @@ const Settings = (props: Props) => {
                     </div>
                 </div>
             </section>
-
-        
 
 
         </>

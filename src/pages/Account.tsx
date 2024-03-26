@@ -142,6 +142,9 @@ const Account = (props: Props) => {
             const res = await axiosPrivate.post("/addDues", data)
             if (res && res.data.success) {
                 toast.success("Dues added Successfully!!")
+                getDues()
+                setIsFormOpen(!isFormOpen)
+                
                 handleClose();
                 console.log(res)
             }
@@ -282,9 +285,10 @@ const Account = (props: Props) => {
             const res = await axiosPrivate.post("http://localhost:5000/api/v1/category", { category, budget_boundry })
             if (res && res.data.success) {
                 toast.success("Category added succssfully!!")
+                setOpenForm(!openForm)
             }
         } catch (error) {
-            toast.error("Something went wrong while adding the category!!")
+            toast.error("Something went wrong!!")
         }
 
 
@@ -317,28 +321,29 @@ const Account = (props: Props) => {
                                     <button onClick={formHandler} className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>Add Category</button>
                                     {
                                         openForm &&
-                                        <form onSubmit={handleSubmitForm} className='absolute top-5 right-10 bg-white p-6 rounded-lg shadow-lg md:w-96 w-full'>
-                                        <div className="mb-4">
-                                            <label htmlFor="billName" className="block text-sm font-semibold mb-2">Add your Category</label>
-                                            <select onChange={(e)=>setCategory(e.target.value)} className="w-full bg-slate-200 px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500">
-                                                <option value="">Select category</option>
-                                                {filter.map((item, id) => (
-                                                    <option value={item.category} key={item._id}>{item.category}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className="mb-4">
-                                            <label htmlFor="billAmount" className="block text-sm font-semibold mb-2">Add your Budget Boundary</label>
-                                            <input onChange={(e) => setBudget_Boundry(parseInt(e.target.value))} type="number" id="billAmount" className="w-full bg-slate-200 px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500" />
-                                        </div>
-                                        <div className="text-center">
-                                            <button type="submit" className="bg-blue-700 hover:bg-blue-600 text-white font-semibold px-6 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full">
-                                                Submit
-                                            </button>
-                                        </div>
-                                    </form>
-                                    
-                                    
+                                        <form onSubmit={handleSubmitForm} className="absolute top-5 right-10 bg-white p-8 rounded-lg shadow-lg md:w-96 sm:w-full w-[200px] md:max-w-md z-50">
+                                            <div className="mb-4">
+                                                <label htmlFor="category" className="block text-sm font-semibold mb-2">Select Category</label>
+                                                <select onChange={(e) => setCategory(e.target.value)} className="w-full bg-gray-100 px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500">
+                                                    <option value="">Select category</option>
+                                                    {filter.map((item, id) => (
+                                                        <option value={item.category} key={item._id}>{item.category}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="mb-4">
+                                                <label htmlFor="budget" className="block text-sm font-semibold mb-2">Enter Budget Boundary</label>
+                                                <input onChange={(e) => setBudget_Boundry(parseInt(e.target.value))} type="number" id="budget" className="w-full bg-gray-100 px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500" />
+                                            </div>
+                                            <div className="text-center">
+                                                <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md focus:outline-none">
+                                                    Submit
+                                                </button>
+                                            </div>
+                                        </form>
+
+
+
 
                                     }
                                 </div>

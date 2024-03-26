@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useMemo, useState } from 'react'
+import React, { ChangeEvent, Dispatch, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import DataTable, { Direction } from 'react-data-table-component';
 import { number } from 'yup';
@@ -17,7 +17,11 @@ import useAxiosPrivate from '../axios/axiosPrivate';
 import toast from 'react-hot-toast';
 // import FilterComponent from './FilterComponent';
 
-type Props = {
+type Props = { 
+  data : Movie[],
+  setData : React.Dispatch<React.SetStateAction<Movie[]>>
+  getAllTransaction : ()=>void
+
 }
 
 interface Category {
@@ -127,13 +131,13 @@ const customStyles = {
 
 
 
-const Datatable = (props: Props) => {
+const Datatable = ({data , setData ,getAllTransaction}: Props) => {
 
   const axiosPrivate = useAxiosPrivate();
 
   const [expandedRow, setExpandedRow] = useState<Movie | null>(null);
   const [showUpdateForm, setShowUpdateForm] = useState(false);
-  const [data, setData] = useState<Movie[]>([]);
+ 
   const [categories, setCategories] = useState<Category[]>([])
   const [openFilter, setOpenFilter] = useState(false)
   const [filterTransaction, setFilterTransaction] = useState<Movie[]>([]);
@@ -146,13 +150,15 @@ const Datatable = (props: Props) => {
   const handleCategory = async (event: ChangeEvent<HTMLSelectElement>) => {
     const selectedValue: string = event.target.value;
     if (selectedValue === "") {
-      setData(filterTransaction)
+     getAllTransaction()
     } else {
-      const filteredData = filterTransaction.filter((ele) => ele.category === selectedValue)
+      const filteredData = data.filter((movie) => movie.category === selectedValue)
       setData(filteredData)
     }
-
   }
+
+  // console.log(filterTransaction);
+  
 
 
   const removeFilter = () => {
@@ -178,60 +184,17 @@ const Datatable = (props: Props) => {
     setUpdatedData({
       ...data.find(movie => movie._id === _id)!
     });
-    // console.log(updatedData);
 
     setShowUpdateForm(true);
   };
 
 
-  const getAllTransaction = async () => {
-    try {
-      const data = await axiosPrivate.get("/getAllTransaction")
-      const transactionData = data.data.getTransaction;
-      setData(transactionData)
-      setFilterTransaction(transactionData);
-    } catch (error) {
-      console.log(error);
-
-    }
-  }
 
 
 
 
 
 
-  function convertArrayOfObjectsToCSV(array: any[]): string {
-    let result: string = '';
-
-    if (!Array.isArray(array) || array.length === 0) {
-      console.error('Invalid array provided for CSV conversion.');
-      return result;
-    }
-
-    const columnDelimiter = ',';
-    const lineDelimiter = '\n';
-    const keys = Object.keys(array[0]);
-
-    result += keys.join(columnDelimiter);
-    result += lineDelimiter;
-
-    array.forEach((item: { [key: string]: any }) => {
-      let ctr = 0;
-      keys.forEach((key: string) => {
-        if (ctr > 0) result += columnDelimiter;
-
-        // Handle potential null or undefined values
-        const value = item[key] !== undefined && item[key] !== null ? item[key] : '';
-        result += value;
-
-        ctr++;
-      });
-      result += lineDelimiter;
-    });
-
-    return result;
-  }
 
   const downloadCSV = (): void => {
     const csvContent = data.map(row => Object.values(row).join(',')).join('\n');
@@ -265,7 +228,6 @@ const Datatable = (props: Props) => {
 
   useEffect(() => {
     getAllTransaction()
-    setData(data)
     getAllCategory()
   }, [])
 
@@ -282,24 +244,25 @@ const Datatable = (props: Props) => {
   }
 
 
-  //   const handleupdate = async (_id : string , e: React.FormEvent<HTMLFormElement>)=>{
-  //     e.preventDefault()
-  //     try {
-  //         await axios.put(`http://localhost:5000/api/v1/updateTransaction/${_id}` , updatedData)
-  //         getAllTransaction();
-  //     } catch (error) {
-  //         console.log(error)
-  //     }
-  //     setShowUpdateForm(false);
-  //   }
+    const handleUpdate = async (_id : string , e: React.FormEvent<HTMLFormElement>)=>{
+      e.preventDefault();
+      try {
+        await axiosPrivate.put(`http://localhost:5000/api/v1/updateTransaction/${_id}`, updatedData);
+        toast.success("Transaction updated successfully!");
+        getAllTransaction(); // Refresh the transaction data after update
+        setShowUpdateForm(!showUpdateForm); // Hide the update form
+      } catch (error) {
+        console.log(error);
+      }
+    }
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setUpdatedData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const { name, value } = e.target;
+      setUpdatedData(prevState => ({
+        ...prevState,
+        [name]: value
+      }));
+    };
 
 
 
@@ -442,7 +405,7 @@ const Datatable = (props: Props) => {
                     onChange={handleCategory}
                     className='w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
                   >
-                    <option value="All">All Categories</option>
+                    <option value="-1">All Categories</option>
                     {filter.map((item, id) => (
                       <option key={id} value={item.category}>{item.category}</option>
                     ))}
@@ -471,7 +434,7 @@ const Datatable = (props: Props) => {
             onClick={() => setShowUpdateForm(false)}
           ><IoCloseCircle /></button>
           {/* Your form elements go here */}
-          <form className="space-y-1 w-[500px]" noValidate>
+          <form onSubmit={(e) => handleUpdate(updatedData._id, e)} className="space-y-1 w-[500px]"  noValidate>
             {/* Example input field */}
             <div>
               <label htmlFor="transactionName" className="block text-sm font-medium text-gray-700">
@@ -515,8 +478,8 @@ const Datatable = (props: Props) => {
               </label>
               <select
                 id="category"
-                // value={category}
-                // onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCategory(e.target.value)}
+                value={updatedData.category}
+                onChange={handleInputChange}
                 className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
               >
                 <option >Select Category</option>
