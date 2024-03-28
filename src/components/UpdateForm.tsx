@@ -6,7 +6,9 @@ import useAxiosPrivate from '../axios/axiosPrivate';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-type Props = {}
+type Props = {
+  getUser : ()=>void
+}
 
 interface User {
     firstname: string,
@@ -21,7 +23,7 @@ type formValue = {
  
 }
 
-const UpdateForm = (props: Props) => {
+const UpdateForm = ({getUser}: Props) => {
 
   const axiosPrivate = useAxiosPrivate()
 
@@ -42,11 +44,13 @@ const UpdateForm = (props: Props) => {
   const navigate = useNavigate()
 
 
-  const onSubmit = async(data : formValue)=>{
+  const onSubmit = async(data : formValue )=>{
     try {
         const res = await axiosPrivate.put("http://localhost:5000/api/v1/update" , data)
         if(res && res.data.success){
             toast.success("Profile Updated Successfully!!")
+            getUser()
+            setIsOpen(!isOpen)
             navigate("/setting")
         }
     } catch (error) {
@@ -118,10 +122,6 @@ const UpdateForm = (props: Props) => {
         Update
       </button>
     </div>
-  
-   
-   
- 
   </form>
 </div>
     </div>

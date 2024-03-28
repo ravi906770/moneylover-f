@@ -11,10 +11,10 @@ const FakeChart3: React.FC = () => {
             const config: ChartConfiguration<'line'> = {
                 type: 'line',
                 data: {
-                    labels: Array.from({ length: 31 }, (_, i) => (i + 1).toString()), // Labels for the days of March
+                    labels: Array.from({ length: 30 }, (_, i) => (i + 1).toString()), // Labels for the days of March
                     datasets: [{
                         label: 'Expense', // Label for the dataset
-                        data: [200, 150, 180, 220, 250, 300, 280, 320, 300, 280, 350, 400, 380, 420, 450, 500, 520, 480, 550, 600, 580, 620, 650, 700, 720, 680, 750, 800, 780, 820, 850], // Dummy expense data for each day of March
+                        data: [200, 150, 180, 220, 250, 300, 280, 320, 300, 280, 350, 400, 380, 420, 450, 500, 520, 480, 550, 600, 580, 620, 650, 700, 720, 680, 750, 800, 780, 820], // Dummy expense data for each day of March
                         borderColor: ['rgb(255, 99, 132)',
                         'rgb(54, 162, 235)',
                         'rgb(255, 205, 86)',

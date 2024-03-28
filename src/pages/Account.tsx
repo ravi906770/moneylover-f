@@ -19,6 +19,7 @@ import { IoIosCloseCircle } from "react-icons/io";
 import useAxiosPrivate from '../axios/axiosPrivate';
 import toast from 'react-hot-toast';
 import { filter } from '../components/Filter';
+import { TbCategory2 } from "react-icons/tb";
 
 
 type Props = {}
@@ -286,12 +287,24 @@ const Account = (props: Props) => {
             if (res && res.data.success) {
                 toast.success("Category added succssfully!!")
                 setOpenForm(!openForm)
+                // fetchCategory()
+                getCategory()
             }
         } catch (error) {
             toast.error("Something went wrong!!")
         }
 
 
+    }
+
+    const getCategory = async () => {
+        try {
+            const response = await axiosPrivate.get('http://localhost:5000/api/v1/getCategory');
+            const data = response.data.getCategory;
+            setCategoryData(data);
+        } catch (error) {
+            console.error('Failed to fetch transaction data:', error);
+        }
     }
 
 
@@ -360,10 +373,11 @@ const Account = (props: Props) => {
                                             return (
                                                 <>
                                                     <div className="flex items-center relative" key={index}>
-                                                        <CiBookmarkPlus className="text-green-500 mr-2 text-[25px]" onClick={handleIconClick} />
+                                                        <TbCategory2 className='text-green-400 mr-2 text-[20px]'/>
+                                                        {/* <CiBookmarkPlus className="text-green-500 mr-2 text-[25px]" onClick={handleIconClick} /> */}
                                                         <h1>{item.category}</h1>
                                                         <div className='absolute right-0  rounded'>
-                                                            <h4 className='text-[10px] '>Your Limit :{budgetAmount}</h4>
+                                                            <h4 className='text-[10px] font-bold'>Your Limit :{budgetAmount}</h4>
                                                             <h4 className='text-[10px]'>Total Usage: {((item.totalAmount / budgetAmount) * 100).toFixed(2)}%</h4>
                                                         </div>
 
@@ -573,7 +587,7 @@ const Account = (props: Props) => {
                                 <div className=" col-span-2 w-full border border-solid relative overflow-x-auto shadow-panelShadow bg-white">
                                     <div className="w-full p-2 ">
                                         <h1 className='text-start text-[25px]'>Daily Review</h1>
-                                        <FakeChart3 />
+                                        <FakeChart3/>
                                     </div>
                                     <div className='absolute top-0 right-0  p-2'>
                                         <h1>Select Month</h1>

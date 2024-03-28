@@ -267,7 +267,7 @@ const Dashboard = (props: Props) => {
                                     <div className='shadow-panelShadow bg-white p-3'>
                                         <PieChart categoryData={categoryData} fetchCategory={fetchCategory} />
                                     </div>
-                                    <div className='mt-8 sm:mt-0 sm:ml-4 hidden sm:block'>
+                                    <div className='mt-8 sm:mt-0 sm:ml-4'>
                                         <div className='lg:shadow-panelShadow bg-white p-3'>
                                             <LineChart fetch={fetch} transactionData={transactionData} />
                                         </div>

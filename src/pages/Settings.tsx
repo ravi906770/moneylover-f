@@ -12,6 +12,17 @@ import { IoPeople } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import TransactionForm from '../components/TransactionForm';
 import UpdateForm from '../components/UpdateForm';
+import PieChart from '../components/PieChart';
+import LineChart from '../components/LineChart';
+import FakeChart from '../components/FakeChart';
+import FakeChart2 from '../components/FakeChart2';
+import { FaRegUserCircle } from 'react-icons/fa';
+import { SiMinutemailer } from 'react-icons/si';
+import { MdDelete, MdMobileScreenShare } from 'react-icons/md';
+import BarChart1 from '../components/BarChart1';
+import BarChart2 from '../components/BarChart2';
+import { category } from '../components/Filter';
+import { useForm } from 'react-hook-form';
 
 
 type Props = {
@@ -20,10 +31,20 @@ type Props = {
 
 type User = {
     firstname: string,
-    lastname: string,
     email: string,
     mobile_no: string
 }
+
+type Limit = {
+    income: number,
+    daily_limit: number
+}
+
+type Category = {
+    category : string,
+    budget_boundry : number
+}
+
 
 
 const Settings = (props: Props) => {
@@ -32,13 +53,35 @@ const Settings = (props: Props) => {
 
     const [showMenu, setShowMenu] = useState<boolean>(false);
     const [userProfile, setUserProfile] = useState<User>()
+    const [categoryData, setCategoryData] = useState<Category[]>([]);
+    const [limitData, setLimitData] = useState<Limit[]>([])
     const [showForm, setShowForm] = useState(false);
+    const [showBudgetForm, setShowBudgetForm] = useState(false)
+    const [showLimitForm, setLimitForm] = useState(false)
 
     const toggleForm = () => {
         setShowForm(!showForm);
     };
 
+    const budgetForm = () => {
+        setShowBudgetForm(!showBudgetForm)
+    }
+
+    const limitForm = () => {
+        setLimitForm(!showLimitForm)
+    }
+
     const navigate = useNavigate()
+
+    const getCategory = async () => {
+        try {
+            const response = await axiosPrivate.get('http://localhost:5000/api/v1/getCategory');
+            const data = response.data.getCategory;
+            setCategoryData(data);
+        } catch (error) {
+            console.error('Failed to fetch transaction data:', error);
+        }
+    }
 
     const getUser = async () => {
         try {
@@ -52,21 +95,32 @@ const Settings = (props: Props) => {
         }
     }
 
+    
+
+    const getLimit = async()=>{
+        try {
+            const res = await axiosPrivate.get("http://localhost:5000/api/v1/getLimit")
+            if(res && res.data.success){
+                setLimitData(res.data.data)
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong while getting the Limit !!!")
+            
+        }
+    }
+
+    useEffect(()=>{
+        getLimit()
+    },[])
+
     useEffect(() => {
         getUser()
     }, [])
 
-    // const handleUpdate = async (data: User) => {
-    //     try {
-    //         const res = await axiosPrivate.put("http://localhost:5000/api/v1/update", data)
-    //         if (res && res.data.success) {
-    //             toast.success("Profile Updated Successfully!!")
-    //             navigate("/setting")
-    //         }
-    //     } catch (error) {
-    //         toast.error("Something went wrong while update the profile!!")
-    //     }
-    // }
+    useEffect(() => {
+    getCategory()
+    }, [])
 
 
     const handleDelete = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -87,11 +141,273 @@ const Settings = (props: Props) => {
         setShowMenu(!showMenu);
     };
 
+    const { register: register1, handleSubmit: handleSubmit1, formState: { errors: errors1 } } = useForm<User>({});
+    const { register: register2, handleSubmit: handleSubmit2, formState: { errors: errors2 } } = useForm<Limit>();
+    const { register: register3, handleSubmit: handleSubmit3, formState: { errors: errors3 } } = useForm<Category>();
+
+
+    const handleUser = async(data : User)=>{
+        try {
+            const res = await axiosPrivate.put("http://localhost:5000/api/v1/update" , data)
+            if(res && res.data.success){
+                toast.success("Profile Updated Successfully!!")
+                getUser()
+                setShowForm(!showForm)
+            }
+        } catch (error) {
+            toast.error("Something went wrong while updating your profile!!")
+        }
+    }
+
+    const handleLimit = async(data : Limit)=>{
+        // console.log(data)
+        try {
+            const res = await axiosPrivate.put("http://localhost:5000/api/v1/updateLimit" , data)
+            if(res && res.data.success){
+                toast.success("Limit Updated Successfully!!")
+                setLimitForm(!limitForm)
+                getLimit()
+            }
+        } catch (error) {
+            toast.error("Something went wrong in updating limit!!")
+        }
+    }
+
+    const handleCategory = async(data : Category)=>{
+        try {
+            const res = await axiosPrivate.put("http://localhost:5000/api/v1/updatecategory" , data)
+            if(res && res.data.success){
+                toast.success("Category Updated Successfully!!")
+                setShowBudgetForm(!showBudgetForm)
+                getCategory()
+            }
+        } catch (error) {
+            toast.error("Something went wrong while updating the category!!")
+        }
+    }
+
+   
+    
+
 
 
     return (
         <>
             <section className='flex items-center w-full min-h-screen bg-no-repeat bg-center bg-cover'>
+                <div className='flex flex-col lg:flex-row h-full'>
+                    <div className='w-full lg:w-1/5 bg-slack-50 lg:rounded-r-lg p-4 lg:p-10'>
+                        <div className='mt-4 relative cursor-pointer'>
+                            <button className='lg:hidden absolute top-2 right-4 text-xl focus:outline-none' onClick={toggleMenu}>
+                                {showMenu ? <CiMenuBurger /> : <IoIosCloseCircle />}
+                            </button>
+                            <div className=''>
+                                {!showMenu && <Menu />}
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div className='w-full lg:w-4/5 p-4 lg:p-10'>
+                        <div className='mb-12 relative'>
+                            <button onClick={toggleForm} className='absolute right-0 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded '>Update Profile</button>
+                            {showForm &&
+                                <form onSubmit={handleSubmit1(handleUser)} className='absolute top-5 right-10 bg-slate-100  p-6 rounded-lg shadow-lg z-50'>
+                                    <div className="mb-4 flex gap-2 justify-between items-center">
+                                        <label htmlFor="billName" className="block text-sm font-semibold mb-2"> <FaRegUserCircle className='text-[25px] text-primaryColor' /></label>
+                                        <input type="text" id="billName" className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500" placeholder={userProfile?.firstname} {...register1("firstname")}/>
+                                    </div>
+                                    <div className="mb-4 flex gap-2 justify-between items-center">
+                                        <label htmlFor="billAmount" className="block text-sm font-semibold mb-2"><SiMinutemailer className='text-[25px] text-primaryColor' /></label>
+                                        <input type="email" id="billAmount" className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500" placeholder={userProfile?.email} {...register1("email")}/>
+                                    </div>
+                                    <div className="mb-4 flex gap-2 justify-between items-center">
+                                        <label htmlFor="billAmount" className="block text-sm font-semibold mb-2"><MdMobileScreenShare className='text-[25px] text-primaryColor' /></label>
+                                        <input type="tel" id="billAmount" className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500" placeholder={userProfile?.mobile_no} {...register1("mobile_no")}/>
+                                    </div>
+                                    <div className="text-center">
+                                        <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">Update</button>
+                                    </div>
+                                </form>
+
+
+                            }
+                        </div>
+                        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                            {/* First component */}
+                            <div className="profile flex flex-col border border-blue-300 rounded-lg p-4 bg-white shadow-md">
+                                <div className="img mb-4">
+                                    <img src={user} alt="" className="rounded-full w-20 h-20 sm:w-full sm:h-full  mx-auto" />
+                                </div>
+                                <div className="details text-center sm:text-left">
+                                    <div className='flex items-center mb-2 border border-solid rounded-md'>
+                                        <FaRegUserCircle className='text-[25px] text-primaryColor mr-2 m-2' />
+                                        <h1 className="sm:text-xl sm:font-medium">{userProfile?.firstname}</h1>
+                                    </div>
+                                    <div className='flex items-center mb-2 border border-solid rounded-md'>
+                                        <SiMinutemailer className='text-[25px] text-primaryColor mr-2 m-2' />
+                                        <h1 className="sm:text-xl sm:font-medium">{userProfile?.email}</h1>
+                                    </div>
+                                    <div className='flex items-center border border-solid rounded-md'>
+                                        <MdMobileScreenShare className='text-[25px] text-primaryColor mr-2 m-2' />
+                                        <h1 className="sm:text-xl sm:font-medium">+91 {userProfile?.mobile_no}</h1>
+                                    </div>
+                                </div>
+                                <button type='button' className='bg-red-500 mt-4 hover:bg-green-500 text-white sm:font-medium text-[15px] sm:py-2 sm:px-4 p-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400'>Delete Profile</button>
+                            </div>
+
+
+                            {/* 2nd component Line */}
+                            <div className='gap-4 border border-blue-300 relative rounded-lg '>
+                                <div className='absolute right-0 top-0'>
+                                    <button onClick={limitForm} className='ml-auto bg-blue-500 mt-2 mr-2 hover:bg-green-300 text-white font-bold py-2 px-4 rounded h-[20px]]'>
+                                        Update Income Limit
+                                    </button>
+
+                                    {showLimitForm &&
+                                        <form onSubmit={handleSubmit2(handleLimit)} className='absolute top-5 right-10 bg-gray-200 p-6 rounded-lg shadow-lg'>
+                                            <div className="mb-4">
+                                                <label htmlFor="billName" className="block text-sm font-semibold mb-2">Your Income</label>
+                                                <input type="number" id="billName" className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500" {...register2("income")}/>
+                                            </div>
+                                            <div className="mb-4">
+                                                <label htmlFor="billAmount" className="block text-sm font-semibold mb-2">Your Daily Limit</label>
+                                                <input type="number" id="billAmount" className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500" {...register2("daily_limit")}/>
+                                            </div>
+                                            <div className="text-center">
+                                                <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">Update</button>
+                                            </div>
+                                        </form>
+                                    }
+                                </div>
+                                <div className='sm:flex mt-[64px] '>
+                                    <div className='w-full   sm:w-72 h-36 border border-solid flex items-center justify-center shadow-md'>
+                                        <div className='text-center'>
+                                            <h1 className='text-2xl text-[#70ee70] font-bold'>₹ {limitData[0]?.income}</h1>
+                                            <h3>Your Monthly Income</h3>
+                                        </div>
+                                    </div>
+                                    <div className='w-full  sm:w-72 h-36 border border-solid flex items-center justify-center shadow-md'>
+                                        <div className='text-center'>
+                                            <h1 className='text-2xl text-[#FF0000] font-bold'>₹ {limitData[0]?.daily_limit}</h1>
+                                            <h3>Your Daily Limit</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                {/* bar chart Limit */}
+                                <div className='mt-3'>
+                                    <BarChart1 getLimit = {getLimit} limitData={limitData}/>
+
+                                    {/* <BarChart2/> */}
+                                </div>
+
+
+                            </div>
+
+
+                            {/* 3rd component Line */}
+
+                            <div className='gap-4 border border-blue-300 relative rounded-lg'>
+                                <div className='absolute right-0 top-0'>
+                                    <button onClick={budgetForm} className='ml-auto bg-blue-500 mt-2 mr-2 hover:bg-green-300 text-white font-bold py-2 px-4 rounded h-[20px]]'>
+                                        Update Budget Limit
+                                    </button>
+
+                                    {showBudgetForm &&
+                                        <form onSubmit={handleSubmit3(handleCategory)} className='absolute top-5 right-10 bg-slate-100  p-6 rounded-lg shadow-lg'>
+                                            <div className="">
+                                                <label htmlFor="transactionName" className="block text-sm font-medium text-gray-700">
+                                                    Category
+                                                </label>
+                                                <select
+                                                    {...register3('category')}
+                                                    id="category"
+                                                    className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                                >
+                                                    <option value="">Select Category</option>
+                                                    {categoryData.map((ele, id) => (
+                                                        <option key={id} value={ele.category}>
+                                                            {ele.category}
+                                                        </option>
+                                                    ))}
+                                                </select>
+
+                                            </div>
+                                            <div className="">
+                                                <label htmlFor="transactionName" className="block text-sm font-medium text-gray-700">
+                                                    Enter Budget Boundry
+                                                </label>
+                                                <input {...register3("budget_boundry")} type="number" id="billAmount" className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500" placeholder='2000' />
+
+                                            </div>
+                                            <div className="text-center mt-2">
+                                                <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">Update</button>
+                                            </div>
+                                        </form>
+                                    }
+                                </div>
+                                {/* category  Limit */}
+                                <div className='mt-[64px]'>
+                                    <table className="min-w-min divide-y divide-gray-200">
+                                        <thead className="bg-gray-50">
+                                            <tr>
+                                                <th scope="col" className="px-6 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                                                    Category
+                                                </th>
+                                                <th scope="col" className="px-6 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                                                    Budget Limit
+                                                </th>
+                                                {/* <th scope="col" className="px-4 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                                                    Actions
+                                                </th> */}
+                                            </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                            {categoryData?.map((item, index) => {
+                                                return (
+                                                    <tr key={index}>
+                                                        <td className="px-4 py-4 whitespace-nowrap">
+                                                            <div className="text-sm text-gray-900">{item.category}</div>
+                                                        </td>
+                                                        <td className="px-4 py-4 whitespace-nowrap">
+                                                            <div className="text-sm text-gray-900">₹ {item.budget_boundry}</div>
+                                                        </td>
+                                                        {/* <td className="px-4 py-4 whitespace-nowrap ">
+                                                            <div className="text-xl text-red-600 "><button><MdDelete /></button></div>
+                                                        </td> */}
+                                                    </tr>
+                                                )
+                                            })}
+                                        </tbody>
+                                    </table>
+
+
+                                    {/* <BarChart2/> */}
+                                </div>
+
+
+                            </div>
+
+
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+        </>
+    )
+}
+
+export default Settings
+
+
+
+
+{/* <section className='flex items-center w-full min-h-screen bg-no-repeat bg-center bg-cover'>
                 <div className="flex flex-col lg:flex-row h-full">
 
                     <div className='w-full lg:w-1/5 bg-slack-50 lg:rounded-r-lg p-4 lg:p-10'>
@@ -124,41 +440,35 @@ const Settings = (props: Props) => {
                                         <div className='flex flex-col md:flex-row items-start'>
                                             <div className='flex flex-col gap-5 mt-5 w-full md:w-[70%]'>
                                                 <div className='w-full'>
-                                                    <label className=''>Your Name:</label>
+                                                    <label className='block text-gray-700 text-sm font-bold mb-2'>Your Name:</label>
                                                     <input type="text" className='border border-gray-300 rounded-md p-2 w-full text-[15px]' placeholder={userProfile?.firstname} />
                                                 </div>
                                                 <div className='w-full'>
-                                                    <label>Your Email:</label>
+                                                    <label className='block text-gray-700 text-sm font-bold mb-2'>Your Email:</label>
                                                     <input type="text" className='border border-gray-300 rounded-md p-2 w-full text-[15px] ' placeholder={userProfile?.email} />
                                                 </div>
                                                 <div className='w-full'>
-                                                    <label>Your Contact:</label>
+                                                    <label className='block text-gray-700 text-sm font-bold mb-2'>Your Contact:</label>
                                                     <input type="text" className='border border-gray-300 rounded-md p-2 w-full text-[15px] ' placeholder={userProfile?.mobile_no} />
                                                 </div>
                                             </div>
-                                            <div className='flex flex-col gap-5 mt-[75px] ml-0 md:ml-10'>
-                                                <button type='button' className='bg-blue-500 hover:bg-green-500 text-white font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400' onClick={toggleForm}>Update Profile</button>
-                                                <button type='button' className='bg-red-500 hover:bg-green-500 text-white font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400' onClick={(e) => handleDelete}>Delete Profile</button>
+                                            <div className='flex flex-col gap-5 mt-5 md:mt-[20px] ml-0 md:ml-10'>
+                                                <button type='button' className='bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-auto'>Update Profile</button>
+                                                <button type='button' className='bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 w-full md:w-auto'>Delete Profile</button>
                                             </div>
                                         </div>
+
                                     </form>
                                 </div>
-                                 <div>
-                                    {showForm && 
-                                            <div>
-                                               <UpdateForm/>
-                                            </div>
+                                <div>
+                                    {showForm &&
+                                        <div>
+                                            <UpdateForm getUser={getUser} />
+                                        </div>
                                     }
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </section>
-
-
-        </>
-    )
-}
-
-export default Settings
+            </section> */}

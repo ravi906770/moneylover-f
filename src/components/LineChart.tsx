@@ -57,6 +57,7 @@ const LineChart: React.FC<Props> = ({transactionData,fetch}) => {
           }]
         },
         options: {
+          responsive : true,
           scales: {
             y: {
               beginAtZero: true
@@ -74,7 +75,7 @@ const LineChart: React.FC<Props> = ({transactionData,fetch}) => {
   }, [transactionData]);
 
   return (
-    <div className="h-96 w-full ">
+    <div className="h-full w-full ">
       <canvas id="LineChart"></canvas>
     </div>
   );

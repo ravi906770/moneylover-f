@@ -54,13 +54,14 @@ const Login = (props: Props) => {
           access_token
         })
        toast.success("login Successfully!!")
+       navigate("/dashboard")
         // console.log(auth);
         
         // setTimeout(()=>{
         //   console.log(auth)
         // },5000)
        
-        navigate("/")
+
       
       }
     } catch (error) {

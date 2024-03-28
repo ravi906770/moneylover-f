@@ -5,7 +5,7 @@ import Error from '../ErrorBoundry/Error';
 import { useAuth } from '../context/authContext';
 import Dashboard from '../pages/Dashboard';
 import Profile from '../pages/Profile';
-import SplitBill from '../pages/SplitBill';
+// import SplitBill from '../pages/SplitBill';
 import Settings from '../pages/Settings';
 import Loader from '../components/Loader';
 const Register = React.lazy(()=>import('../pages/Register')) ;

@@ -211,6 +211,49 @@ export const Filters = [
     }
   ]
 
+  export const  category = [
+    {
+      _id : 1,
+      category : "food",
+      budget_boundry : 2000
+    },
+    {
+      _id : 2,
+      category : "hospital",
+      budget_boundry : 3000
+    },
+    {
+      _id : 3,
+      category : "shopping",
+      budget_boundry : 4000
+    },
+    {
+      _id : 4,
+      category : "travel",
+      budget_boundry : 1000
+    },
+    {
+      _id : 5,
+      category : "education",
+      budget_boundry : 2000
+    },
+    {
+      _id : 6,
+      category : "rent" ,
+      budget_boundry : 2000
+    },
+    {
+      _id : 7,
+      category : "fuel",
+      budget_boundry : 1000 
+    },
+    {
+      _id : 8,
+      category : "misc",
+      budget_boundry : 2000 
+    }
+  ]
+
 
 
 

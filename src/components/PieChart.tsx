@@ -27,20 +27,7 @@ const PieChart :React.FC<Props> = ({categoryData,fetchCategory}) => {
       '#32CD32', // Lime Green
       '#FFD700'  // Gold
   ];
-    // const fetch = async () => {
-    //   try {
-    //     const response = await axios.get('http://localhost:5000/api/v1/categoryPayment');
-    //     const data = response.data.formatData;
-    //     // const sortedData = data.sort((a: { month: string }, b: { month: string }) => {
-    //     //   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    //     //   return months.indexOf(a.month) - months.indexOf(b.month);
-    //     // });;
-    //     setCategoryData(data);
-    //     // console.log(data)
-    //   } catch (error) {
-    //     console.error('Failed to fetch transaction data:', error);
-    //   }
-    // }
+
 
 
     useEffect(()=>{
@@ -74,6 +61,7 @@ const PieChart :React.FC<Props> = ({categoryData,fetchCategory}) => {
           }]
         },
         options: {
+          responsive : true,
           scales: {
             y: {
               beginAtZero: true
